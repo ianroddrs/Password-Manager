@@ -1,6 +1,6 @@
 # Projeto 1: Sistema Desktop
 
-##### EQUIPE: <a href="https://github.com/ianroddrs">IAN RODRIGUES</a>, <a href="https://github.com/andrerbr">ADSON RIBEIRO</a>, <a href="https://github.com/rodrigogois685">RODRIGO GOIS</a> e DANILO COSTA
+##### EQUIPE: <a href="https://github.com/ianroddrs" target="_blank">IAN RODRIGUES</a>, <a href="https://github.com/andrerbr" target="_blank">ADSON RIBEIRO</a>, <a href="https://github.com/rodrigogois685" target="_blank">RODRIGO GOIS</a> e <a href="https://github.com/danilofigueiredocost" target="_blank">DANILO COSTA</a>
 
 <hr>
 
