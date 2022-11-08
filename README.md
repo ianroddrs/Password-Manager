@@ -11,13 +11,13 @@
 <h3>Tecnologia mínima que deve ser utilizada:</h3>
 <ol>
   <li>
-    <a href="https://flet.dev/" target="_blank">FLET</a>
+    <a href="https://flet.dev/" target="_blank">FLET</a> (Interface Gráfica)
   </li>
   <li>
-    <a href="https://docs.python.org/3/library/sqlite3.html" target="_blank">SLQLITE</a>
+    <a href="https://docs.python.org/3/library/sqlite3.html" target="_blank">SLQLITE</a> (Banco de Dados)
   </li>
   <li>
-    Alguma lib que tenha o algoritmo AES
+    <a href="https://pycryptodome.readthedocs.io/en/latest/src/cipher/aes.html" target="_black">AES - PyCryptodome</a> (Criptografia)
   </li>
 </ol>
 <h3>Funcionalidades mínimas:</h3>
