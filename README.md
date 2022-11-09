@@ -14,7 +14,7 @@
     <a href="https://flet.dev/" target="_blank">FLET</a> (Interface Gráfica)
   </li>
   <li>
-    <a href="https://docs.python.org/3/library/sqlite3.html" target="_blank">SLQLITE</a> (Banco de Dados)
+    <a href="https://docs.python.org/3/library/sqlite3.html" target="_blank">SQLITE</a> (Banco de Dados)
   </li>
   <li>
     <a href="https://pycryptodome.readthedocs.io/en/latest/src/cipher/aes.html" target="_black">AES - PyCryptodome</a> (Criptografia)
