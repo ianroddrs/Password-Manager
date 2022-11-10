@@ -7,7 +7,7 @@ from functions.cadastro import cadastrar_usuario
 def main(page):
     page.title = "Cadastro"
     page.theme_mode = 'light'
-    page.window_width = 350
+    page.window_width = 400
     page.window_height = 700
     page.horizontal_alignment = 'end'
     
