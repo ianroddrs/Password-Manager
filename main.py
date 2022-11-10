@@ -1,6 +1,6 @@
 import sqlite3
 import flet
-from flet import page,TextField,Container,Row,Text,FilledButton,colors,alignment,theme, Container
+from flet import page,TextField,Container,Row,Text,FilledButton,colors,alignment,theme
 from functions.cadastro import cadastrar_usuario
 
 
@@ -9,7 +9,7 @@ def main(page):
     page.theme_mode = 'light'
     page.window_width = 400
     page.window_height = 700
-    page.horizontal_alignment = 'end'
+    #page.horizontal_alignment = 'center'
     
 
     titulo = Text(value='Cadastre-se',size=20,weight='bold')
@@ -23,10 +23,10 @@ def main(page):
     botao_cadastrar = FilledButton(text='Cadastrar',on_click=cadastrar_usuario)
     
     page.add(
-	Row([titulo]),
+	    Row([titulo]),
         Row([username],alignment="center"),
-	Row([email],alignment="center"),
-	Row([senha],alignment="center"),
+	    Row([email],alignment="center"),
+	    Row([senha],alignment="center"),
         Row([botao_cadastrar],alignment="center")
     )
 
