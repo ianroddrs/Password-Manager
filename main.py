@@ -1,7 +1,20 @@
 import sqlite3
 import flet
 from flet import page,TextField,Container,Row,Text,FilledButton,colors,alignment,theme
-from functions.cadastro import cadastrar_usuario
+
+"""
+ Criação banco de dados
+ conexao = sqlite3.connect('usuarios.db')
+ c = conexao.cursor()
+ c.execute('''CREATE TABLE user_cadastro (
+         username text,
+         email text,
+         senha text
+         )
+     ''')
+ conexao.commit()
+ conexao.close()
+"""
 
 
 def main(page):
@@ -10,6 +23,26 @@ def main(page):
     page.window_width = 400
     page.window_height = 700
     #page.horizontal_alignment = 'center'
+
+    def cadastrar_usuario(e):
+        cadastro = {
+            'username': username.value,
+            'email': email.value,
+            'senha': senha.value
+        }
+        conexao = sqlite3.connect('usuarios.db')
+        
+        c = conexao.cursor()
+
+        c.execute(" INSERT INTO user_cadastro VALUES(:username, :email, :senha)",
+            {
+                'username':cadastro['username'],
+                'email':cadastro['email'],
+                'senha':cadastro['senha'] 
+            }
+        )
+        conexao.commit()
+        conexao.close()
     
 
     titulo = Text(value='Cadastre-se',size=20,weight='bold')
@@ -21,6 +54,7 @@ def main(page):
     senha = TextField(label='Senha',border_color=colors.BLACK,password=True,can_reveal_password=False)
 
     botao_cadastrar = FilledButton(text='Cadastrar',on_click=cadastrar_usuario)
+
     
     page.add(
 	    Row([titulo]),
