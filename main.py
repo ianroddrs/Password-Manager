@@ -1,7 +1,7 @@
 import flet
 from flet.ref import Ref
 from flet import Page,TextField,Row,Text,FilledButton,colors
-from functions.cadastro import init, cadastrar_usuario
+from functions.cadastro import init, cadastrar_usuario,login_sistema
 
 def main(page: Page):
 
@@ -9,6 +9,8 @@ def main(page: Page):
         'username' : Ref[TextField](),
         'email' : Ref[TextField](),
         'senha' : Ref[TextField](),
+        'l_user': Ref[TextField](),
+        'l_senha':Ref[TextField]()
         #add todos os compontens da tela aqui
     }
 
@@ -30,9 +32,16 @@ def main(page: Page):
 
     botao_cadastrar = FilledButton(text='Cadastre-se',on_click=cadastrar_usuario)
 
+    #login
+    titulo_login = Text(value='Entre',size=20,weight='bold')
+    l_username = TextField(ref=components['l_user'],label='Username',bgcolor=colors.BLACK,autofocus=False)
+    l_senha = TextField(ref=components['l_senha'],label='Senha',border_color=colors.BLACK,password=True,can_reveal_password=False)
+    botao_login = FilledButton(text='Entrar',on_click=login_sistema)
+
     page.add(
         Row(
-            [titulo]
+            [titulo],
+            alignment="center"
         ),
         Row(
             [username],
@@ -48,6 +57,22 @@ def main(page: Page):
         ),
         Row(
             [botao_cadastrar],
+            alignment="center"
+        ),
+        Row(
+            [titulo_login],
+            alignment="center"
+        ),
+        Row(
+            [l_username],
+            alignment="center"
+        ),
+        Row(
+            [l_senha],
+            alignment="center"
+        ),
+        Row(
+            [botao_login],
             alignment="center"
         )
     )

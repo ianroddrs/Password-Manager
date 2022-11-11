@@ -40,3 +40,29 @@ def cadastrar_usuario(e):
         )
         conexao.commit()
         conexao.close()
+def login_sistema(e):
+        from flet import Text, AlertDialog
+        '''
+            Autenticar Login
+        '''
+        login = {
+            'username': components['l_user'].current.value,
+            'senha': components['l_senha'].current.value
+        }
+        conexao = sqlite3.connect('usuarios.db')      
+        
+        c = conexao.cursor()
+        c.execute("SELECT senha FROM user_cadastro WHERE username = '{}'".format(login['username']))
+        senha_bd = c.fetchall()
+        conexao.close()
+        
+        if login['senha'] == senha_bd[0][0]:
+          dlg = AlertDialog(title=Text(f"Hello {login['username']}!"),on_dismiss=lambda e: print("Dialog dismissed!"))
+          page.dialog = dlg
+          dlg.open = True
+          page.update()
+        else: 
+          dlg = AlertDialog(title=Text("Senha Incorreta!"), on_dismiss=lambda e: print("Dialog dismissed!"))
+          page.dialog = dlg
+          dlg.open = True
+          page.update()
