@@ -1,7 +1,7 @@
 import flet
 from flet.ref import Ref
 from flet import Page,TextField,Row,Text,FilledButton,colors
-from functions.cadastro import init, cadastrar_usuario
+from modules.cadastro import init, cadastrar_usuario
 
 def main(page: Page):
 
