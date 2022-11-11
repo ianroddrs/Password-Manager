@@ -1,33 +1,55 @@
-import sqlite3
 import flet
-from flet import page,TextField,Container,Row,Text,FilledButton,colors,alignment,theme
-from functions.cadastro import cadastrar_usuario
+from flet.ref import Ref
+from flet import Page,TextField,Row,Text,FilledButton,colors
+from functions.cadastro import init, cadastrar_usuario
 
+def main(page: Page):
 
-def main(page):
+    components = {
+        'username' : Ref[TextField](),
+        'email' : Ref[TextField](),
+        'senha' : Ref[TextField](),
+        #add todos os compontens da tela aqui
+    }
+
+    #passagem das referências para o outro arquivo
+    init(components, page)
+
     page.title = "Cadastro"
     page.theme_mode = 'light'
     page.window_width = 400
     page.window_height = 700
-    #page.horizontal_alignment = 'center'
-    
 
     titulo = Text(value='Cadastre-se',size=20,weight='bold')
     
-    username = TextField(label='Username',bgcolor=colors.BLACK,autofocus=True)
+    username = TextField(ref=components['username'],label='Username',bgcolor=colors.BLACK,autofocus=True)
     
-    email = TextField(label='E-mail', border_color=colors.BLACK)
+    email = TextField(ref=components['email'],label='E-mail', border_color=colors.BLACK)
     
-    senha = TextField(label='Senha',border_color=colors.BLACK,password=True,can_reveal_password=False)
+    senha = TextField(ref=components['senha'],label='Senha',border_color=colors.BLACK,password=True,can_reveal_password=False)
 
-    botao_cadastrar = FilledButton(text='Cadastrar',on_click=cadastrar_usuario)
-    
+    botao_cadastrar = FilledButton(text='Cadastre-se',on_click=cadastrar_usuario)
+
     page.add(
-	    Row([titulo]),
-        Row([username],alignment="center"),
-	    Row([email],alignment="center"),
-	    Row([senha],alignment="center"),
-        Row([botao_cadastrar],alignment="center")
+        Row(
+            [titulo]
+        ),
+        Row(
+            [username],
+            alignment="center"
+        ),
+        Row(
+            [email],
+            alignment="center"
+        ),
+        Row(
+            [senha],
+            alignment="center"
+        ),
+        Row(
+            [botao_cadastrar],
+            alignment="center"
+        )
     )
 
 flet.app(target=main)
