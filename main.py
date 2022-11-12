@@ -17,7 +17,7 @@ def main(page: Page):
     #passagem das referências para o outro arquivo
     init(components, page)
 
-    page.title = "Cadastro"
+    page.title = "Cadastro de usuário"
     page.theme_mode = 'light'
     page.window_width = 400
     page.window_min_width = 400
