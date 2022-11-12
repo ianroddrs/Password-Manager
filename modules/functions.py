@@ -40,6 +40,7 @@ def cadastrar_usuario(e):
         )
         conexao.commit()
         conexao.close()
+        
 def login_sistema(e):
         from flet import Text, AlertDialog
         '''
