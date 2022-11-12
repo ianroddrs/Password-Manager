@@ -1,7 +1,6 @@
 import sqlite3
 
 # Criação banco de dados
-
 def create_DB():
     conexao = sqlite3.connect('usuarios.db')
     c = conexao.cursor()
@@ -14,13 +13,13 @@ def create_DB():
     conexao.commit()
     conexao.close()
 
-
+# Importação das variáveis
 def init(c, p):
     global components, page
     components = c
     page = p
 
-
+# Cadastro de usuário
 def cadastrar_usuario(e):
         cadastro = {
             'username': components['username'].current.value,
@@ -40,7 +39,8 @@ def cadastrar_usuario(e):
         )
         conexao.commit()
         conexao.close()
-        
+
+#  Login de usuário
 def login_sistema(e):
         from flet import Text, AlertDialog
         '''

@@ -1,6 +1,6 @@
 import flet
 from flet.ref import Ref
-from flet import Page,TextField,Row,Text,FilledButton,colors, Container,Column,border_radius,Alignment
+from flet import Page,TextField,Row,Text,FilledButton,colors, Container,Column,border_radius, border
 from modules.functions import init, cadastrar_usuario,login_sistema
 
 def main(page: Page):
@@ -20,9 +20,13 @@ def main(page: Page):
     page.title = "Cadastro"
     page.theme_mode = 'light'
     page.window_width = 400
-    page.window_height = 720
-    page.window_min_height = 720
     page.window_min_width = 400
+    page.window_max_width = 400
+    page.window_height = 750
+    page.window_min_height = 750
+    page.window_max_height = 750
+    
+    page.vertical_alignment = "center"
 
     #cadastro de usuário
     titulo = Text(value='Cadastre-se',size=20,weight='bold')
@@ -41,6 +45,7 @@ def main(page: Page):
         Container(
             #width=300,
             #bgcolor=colors.BLACK12,
+            border= border.all(5, colors.BLACK12),
             border_radius=border_radius.all(20),
             padding=10,
             
@@ -76,6 +81,7 @@ def main(page: Page):
         Container(
             #width=300,
             #bgcolor=colors.BLACK12,
+            border= border.all(5, colors.BLACK12),
             border_radius=border_radius.all(20),
             padding=20,
 
