@@ -3,6 +3,9 @@ import sqlite3
 import flet
 from flet import AppBar, ElevatedButton, Page, Text, View, colors, Container, PopupMenuButton,PopupMenuItem,Row, Icon,icons, NavigationRail,NavigationRailDestination,IconButton,FloatingActionButton,VerticalDivider,Column, ButtonStyle,TextField,FilledButton, TextButton, alignment
 from flet.buttons import RoundedRectangleBorder
+from modules.functions import create_DB
+
+create_DB()
 
 def main(page: Page):
     page.title = "Password Manager"
@@ -26,7 +29,7 @@ def main(page: Page):
         email.value = ""
         page.update
 
-        conexao = sqlite3.connect('usuarios.db')
+        conexao = sqlite3.connect('Password-Manager/usuarios.db')
     
         c = conexao.cursor()
 
@@ -49,7 +52,7 @@ def main(page: Page):
             'username': l_username.value,
             'senha': l_senha.value
         }
-        conexao = sqlite3.connect('usuarios.db')      
+        conexao = sqlite3.connect('Password-Manager/usuarios.db')      
         
         c = conexao.cursor()
         c.execute("SELECT senha FROM user_cadastro WHERE username = '{}'".format(login['username']))
