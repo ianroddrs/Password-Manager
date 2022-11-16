@@ -4,7 +4,7 @@ import sqlite3
 def create_DB():
     conexao = sqlite3.connect('Password-Manager/usuarios.db')
     c = conexao.cursor()
-    c.execute('''CREATE TABLE user_cadastro (
+    c.execute('''CREATE TABLE IF NOT EXISTS user_cadastro(
             username text,
             email text,
             senha text

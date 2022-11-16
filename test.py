@@ -1,7 +1,7 @@
 from time import sleep
 import sqlite3
 import flet
-from flet import AppBar, ElevatedButton, Page, Text, View, colors, Container, PopupMenuButton,PopupMenuItem,Row, Icon,icons, NavigationRail,NavigationRailDestination,IconButton,FloatingActionButton,VerticalDivider,Column, ButtonStyle,TextField,FilledButton, TextButton, alignment
+from flet import AppBar, ElevatedButton, Page, Text, View, colors, Container, PopupMenuButton,PopupMenuItem,Row, Icon,icons, NavigationRail,NavigationRailDestination,IconButton,FloatingActionButton,VerticalDivider,Column, ButtonStyle,TextField,FilledButton, TextButton, alignment, AlertDialog
 from flet.buttons import RoundedRectangleBorder
 from modules.functions import create_DB
 
@@ -11,23 +11,20 @@ def main(page: Page):
     page.title = "Password Manager"
     page.theme_mode = "light"
 
+    #MUDAR TEMA
     def change_theme(e):
         page.theme_mode = "light" if page.theme_mode == "dark" else "dark"
         theme_icon_button.selected = not theme_icon_button.selected
         sleep(0.2)
         page.update()
 
+    #CADASTRAR USUÁRIO
     def cadastrar_usuario(e):
         cadastro = {
             'username': username.value,
             'email':  email.value,
             'senha':  senha.value
         }
-
-        username.value = ""
-        senha.value = ""
-        email.value = ""
-        page.update
 
         conexao = sqlite3.connect('Password-Manager/usuarios.db')
     
@@ -43,8 +40,18 @@ def main(page: Page):
         conexao.commit()
         conexao.close()
 
+        username.value = ""
+        senha.value = ""
+        email.value = ""
+
+        dlg = AlertDialog(title=Text(f"Cadastro realizado com sucesso!"),on_dismiss=lambda e: print("Dialog dismissed!"))
+        page.dialog = dlg
+        dlg.open = True
+
+        page.update()
+
+    #LOGAR USUÁRIO
     def login_sistema(e):
-        from flet import AlertDialog, Text
         '''
             Autenticar Login
         '''
@@ -75,22 +82,16 @@ def main(page: Page):
             dlg.open = True
             page.update()
 
+
+    #CONTROLS
+
     #login de usuário
     titulo_login = Text(value='Entre',weight='bold')
     l_username = TextField(label='Username',autofocus=True,expand=False,prefix_icon=icons.ACCOUNT_CIRCLE,width=500)
     l_senha = TextField(label='Senha',border_color=colors.BLACK,password=True,can_reveal_password=True,prefix_icon=icons.PASSWORD,width=500)
-    esqueceu_senha = TextButton(text="Redefinir senha",on_click= lambda _: print(""), style=ButtonStyle(
-                color={
-                    "hovered": colors.BLUE_900,
-                },
-                bgcolor={"hovered": colors.TRANSPARENT, "": colors.TRANSPARENT},))
-    botao_login = FilledButton(text='Entrar',on_click=login_sistema,width=500,style=ButtonStyle(shape={
-                    "hovered": RoundedRectangleBorder(radius=20),
-                    "": RoundedRectangleBorder(radius=5)},))
-    botao_pagina_cadastrar = TextButton(text="CADASTRAR",on_click= lambda _: page.go("/cadastro"), style=ButtonStyle(
-                color={
-                    "hovered": colors.BLUE_900,
-                },))
+    esqueceu_senha = TextButton(text="Redefinir senha",on_click= lambda _: print(""), style=ButtonStyle(color={"hovered": colors.BLUE_900,},bgcolor={"hovered": colors.TRANSPARENT, "": colors.TRANSPARENT},))
+    botao_login = FilledButton(text='Entrar',on_click=login_sistema,width=500,style=ButtonStyle(shape={"hovered": RoundedRectangleBorder(radius=20),"": RoundedRectangleBorder(radius=5)},))
+    botao_pagina_cadastrar = TextButton(text="CADASTRAR",on_click= lambda _: page.go("/cadastro"), style=ButtonStyle(color={"hovered": colors.BLUE_900,},))
 
 
     #cadastro de usuário
@@ -98,20 +99,16 @@ def main(page: Page):
     username = TextField(label='Username',autofocus=True,prefix_icon=icons.ACCOUNT_CIRCLE,width=500)
     email = TextField(label='E-mail', border_color=colors.BLACK,prefix_icon=icons.EMAIL,width=500)
     senha = TextField(label='Senha',border_color=colors.BLACK,password=True,can_reveal_password=True,prefix_icon=icons.PASSWORD,width=500)
-    botao_cadastrar = FilledButton(text='Cadastrar',width=500,on_click=cadastrar_usuario,style=ButtonStyle(shape={
-                    "hovered": RoundedRectangleBorder(radius=20),
-                    "": RoundedRectangleBorder(radius=5)},))
-    botao_pagina_login = TextButton(text="FAÇA LOGIN",on_click= lambda _: page.go("/"), style=ButtonStyle(
-                color={
-                    "hovered": colors.BLUE_900,
-                },))
+    botao_cadastrar = FilledButton(text='Cadastrar',width=500,on_click=cadastrar_usuario,style=ButtonStyle(shape={"hovered": RoundedRectangleBorder(radius=20),"": RoundedRectangleBorder(radius=5)},))
+    botao_pagina_login = TextButton(text="FAÇA LOGIN",on_click= lambda _: page.go("/"), style=ButtonStyle(color={"hovered": colors.BLUE_900,},))
 
 
 
     rail = NavigationRail(
         selected_index=0,
         label_type="all",
-        # extended=True,
+        bgcolor=colors.BLUE_50,
+        extended=False,
         min_width=100,
         min_extended_width=400,
         leading=FloatingActionButton(icon=icons.CREATE, text="Add"),
