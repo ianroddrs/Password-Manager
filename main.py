@@ -3,7 +3,6 @@ import sqlite3
 import flet
 from flet import AppBar, ElevatedButton, Page, Text, View, colors, Container, PopupMenuButton,PopupMenuItem,Row, Icon,icons, NavigationRail,NavigationRailDestination,IconButton,FloatingActionButton,VerticalDivider,Column, ButtonStyle,TextField,FilledButton,margin, TextButton, alignment, AlertDialog
 from flet.buttons import RoundedRectangleBorder
-from modules.functions import create_DB
 
 def create_DB():
     conexao = sqlite3.connect('usuarios.db')
