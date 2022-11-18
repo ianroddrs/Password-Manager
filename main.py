@@ -1,7 +1,7 @@
 from time import sleep
 import sqlite3
 import flet
-from flet import AppBar, Page, Text, View, colors, Container, PopupMenuButton,PopupMenuItem,Row, Icon,icons, NavigationRail,NavigationRailDestination,IconButton,FloatingActionButton,VerticalDivider,Column, ButtonStyle,TextField,FilledButton,margin, TextButton, alignment, AlertDialog
+from flet import AppBar, Page, Text, View, colors,Container, PopupMenuButton,PopupMenuItem,Row, Icon,icons, NavigationRail,NavigationRailDestination,IconButton,FloatingActionButton,VerticalDivider,Column, ButtonStyle,TextField,FilledButton,margin, TextButton, alignment, AlertDialog
 from flet.buttons import RoundedRectangleBorder
 
 def create_DB():
@@ -289,15 +289,20 @@ def main(page: Page):
                         ],
                     )
                 )
-            else:
-                dlg = AlertDialog(title=Text(f"Nenhum usuário logado!"),on_dismiss=lambda e: page.go("/"))
-                page.dialog = dlg
-                dlg.open = True
+            else: 
                 page.views.append(
                     View(
                         "/Perfil",
                         [
-                            dlg,
+                            Container(content=Row(
+                            [
+                                Column(controls=[
+                                        Text("Nenhum usuário logado!"),botao_pagina_login,
+                                    ],expand=True,alignment="center",horizontal_alignment="center"
+                                ), 
+                            ],expand=True,
+                            ),expand=True
+                            )
                         ],
                     )
                 )
