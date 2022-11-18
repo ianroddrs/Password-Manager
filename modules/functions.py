@@ -5,7 +5,7 @@ from flet import Text, AlertDialog
 def create_DB():
     conexao = sqlite3.connect('usuarios.db')
     c = conexao.cursor()
-    c.execute('''CREATE TABLE user_cadastro (
+    c.execute('''CREATE TABLE IF NOT EXISTS user_cadastro (
             username text,
             email text,
             senha text
@@ -13,7 +13,6 @@ def create_DB():
         ''')
     conexao.commit()
     conexao.close()
-
 
 def init(c, p):
     global components, page
