@@ -174,7 +174,7 @@ def main(page: Page):
     
     # RAIL NAVIGATION
     pages = [
-        Container(content=Row([Column(controls=[Text("PERFIL"),],expand=True,alignment="center",horizontal_alignment="center")],expand=True,),expand=True),
+        Text("PERFIL", visible=False),
         Text("SENHAS", visible=False),
         Text("SETTINGS", visible=False),
     ]
