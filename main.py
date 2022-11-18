@@ -26,13 +26,6 @@ def main(page: Page):
     page.window_min_height = 600
     page.window_height = 600
 
-    #ABRIR/FECHAR RAIL
-    def open_rail(e):
-        rail.visible = True if rail.visible == False else False
-        OpenRailMenu.selected = not OpenRailMenu.selected
-        sleep(0.2)
-        page.update()
-
     #MUDAR TEMA
     def change_theme(e):
         page.theme_mode = "light" if page.theme_mode == "dark" else "dark"
@@ -189,9 +182,17 @@ def main(page: Page):
         for index, p in enumerate(pages):
             p.visible = True if index == rail.selected_index else False
         page.update()
-
+        
     def dest_change(e):
         select_page()
+
+    #ABRIR/FECHAR RAIL
+    def open_rail(e):
+        rail.visible = True if rail.visible == False else False
+        OpenRailMenu.selected = not OpenRailMenu.selected
+        sleep(0.2)
+        page.update()
+
 
 
     rail = NavigationRail(
