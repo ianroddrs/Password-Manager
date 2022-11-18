@@ -1,7 +1,7 @@
 from time import sleep
 import sqlite3
 import flet
-from flet import AppBar, ElevatedButton, Page, Text, View, colors, Container, PopupMenuButton,PopupMenuItem,Row, Icon,icons, NavigationRail,NavigationRailDestination,IconButton,FloatingActionButton,VerticalDivider,Column, ButtonStyle,TextField,FilledButton,margin, TextButton, alignment, AlertDialog
+from flet import AppBar, Page, Text, View, colors, Container, PopupMenuButton,PopupMenuItem,Row, Icon,icons, NavigationRail,NavigationRailDestination,IconButton,FloatingActionButton,VerticalDivider,Column, ButtonStyle,TextField,FilledButton,margin, TextButton, alignment, AlertDialog
 from flet.buttons import RoundedRectangleBorder
 
 def create_DB():
@@ -132,6 +132,7 @@ def main(page: Page):
             page.update
         
             if login['senha'] == senha_bd[0][0]:
+                global logado; logado = True
                 dlg = AlertDialog(title=Text(f"Hello {login['username']}!"),on_dismiss=lambda e: print("Dialog dismissed!"))
                 page.dialog = dlg
                 dlg.open = True
@@ -158,6 +159,7 @@ def main(page: Page):
     esqueceu_senha = TextButton(text="Redefinir senha",on_click= lambda _: print(""), style=ButtonStyle(color={"hovered": colors.BLUE_900,},bgcolor={"hovered": colors.TRANSPARENT, "": colors.TRANSPARENT},))
     botao_login = FilledButton(text='Entrar',on_click=login_sistema,width=500,style=ButtonStyle(shape={"hovered": RoundedRectangleBorder(radius=20),"": RoundedRectangleBorder(radius=5)},))
     botao_pagina_cadastrar = TextButton(text="CADASTRAR",on_click= lambda _: page.go("/cadastro"), style=ButtonStyle(color={"hovered": colors.BLUE_900,},))
+    global logado; logado = False
 
     #MENU CADASTRO USUÁRIO
     titulo = Text(value='Cadastre-se',weight='bold')
@@ -171,6 +173,15 @@ def main(page: Page):
     OpenRailMenu = IconButton(icon=icons.MENU_OPEN, selected_icon=icons.MENU_OUTLINED, on_click=open_rail)
     theme_icon_button = IconButton(icons.DARK_MODE, selected_icon=icons.LIGHT_MODE, icon_color=colors.BLACK,icon_size=25, tooltip="change theme", on_click=change_theme,style=ButtonStyle(color={"": colors.BLACK, "selected": colors.WHITE}, ), )
     textAppBar = ""; AppBarMenu =AppBar(title=Text(textAppBar), bgcolor=colors.SURFACE_VARIANT,actions=[theme_icon_button,PopupMenuButton(items=[PopupMenuItem()])])
+
+    #LOGOUT DE SISTEMA
+    def logout(e):
+        page.go("/")
+        global logado; logado = False
+
+    #BOTÃO DE SAIR
+    btn_logout = Container(content=FilledButton(icon=icons.EXIT_TO_APP,text='SAIR',width=100,on_click=logout,style=ButtonStyle(shape={"hovered": RoundedRectangleBorder(radius=20),"": RoundedRectangleBorder(radius=5)})),margin=margin.symmetric(vertical=150),)
+
     
     # RAIL NAVIGATION
     pages = [
@@ -201,7 +212,7 @@ def main(page: Page):
         min_width=90,
         leading=Container(content=FloatingActionButton(icon=icons.ADD,width=100, text="GERAR"),margin=margin.only(bottom=10)),
         group_alignment=0,
-        trailing = Container(content=FilledButton(icon=icons.EXIT_TO_APP,text='SAIR',width=100,on_click=lambda e: page.go("/"),style=ButtonStyle(shape={"hovered": RoundedRectangleBorder(radius=20),"": RoundedRectangleBorder(radius=5)},bgcolor=colors.RED)),margin=margin.symmetric(vertical=150),),
+        trailing = btn_logout,
         destinations=[
             NavigationRailDestination(
                 icon=icons.ACCOUNT_CIRCLE, label="PERFIL"
@@ -265,18 +276,32 @@ def main(page: Page):
                 )
             )
         elif page.route == "/Perfil":
-            AppBarMenu.title = Text("Perfil")
-            AppBarMenu.leading = OpenRailMenu
-            page.views.append(
-                View(
-                    "/Perfil",
-                    [
-                        AppBarMenu,
-                        Row([rail,VerticalDivider(width=1),Column(pages,expand=True)],expand=True)
-                       
-                    ],
+            if logado:
+                AppBarMenu.title = Text("Perfil")
+                AppBarMenu.leading = OpenRailMenu
+                page.views.append(
+                    View(
+                        "/Perfil",
+                        [
+                            AppBarMenu,
+                            Row([rail,VerticalDivider(width=1),Column(pages,expand=True)],expand=True)
+                        
+                        ],
+                    )
                 )
-            )
+            else:
+                dlg = AlertDialog(title=Text(f"Nenhum usuário logado!"),on_dismiss=lambda e: page.go("/"))
+                page.dialog = dlg
+                dlg.open = True
+                page.views.append(
+                    View(
+                        "/Perfil",
+                        [
+                            dlg,
+                        ],
+                    )
+                )
+
 
         page.update()
     
@@ -292,4 +317,4 @@ def main(page: Page):
 
 
 
-flet.app(target=main) #view=flet.WEB_BROWSER
+flet.app(target=main,view=flet.WEB_BROWSER) #view=flet.WEB_BROWSER
