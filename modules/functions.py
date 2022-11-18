@@ -48,7 +48,6 @@ def cadastrar_usuario(e):
             'email':  components['email'].current.value,
             'senha':  components['senha'].current.value
         }
-<<<<<<< HEAD
         conexao = sqlite3.connect('usuarios.db')
         
         c = conexao.cursor()
@@ -66,36 +65,6 @@ def cadastrar_usuario(e):
         
 
 #  Login de usuário
-=======
-        if cadastro['username'] in verificar_user() and cadastro['email'] in verificar_email():
-          dlg = AlertDialog(title=Text("username e email ja cadastrado no sistema"),on_dismiss=lambda e: print("Dialog dismissed!"))
-          page.dialog = dlg
-          dlg.open = True
-          page.update()
-        elif cadastro['username'] in verificar_user():
-          dlg = AlertDialog(title=Text("username ja cadastrado no sistema"),on_dismiss=lambda e: print("Dialog dismissed!"))
-          page.dialog = dlg
-          dlg.open = True
-          page.update()
-        elif cadastro['email'] in verificar_email():
-          dlg = AlertDialog(title=Text("email ja cadastrado no sistema"),on_dismiss=lambda e: print("Dialog dismissed!"))
-          page.dialog = dlg
-          dlg.open = True
-          page.update()                    
-        else:
-            conexao = sqlite3.connect('usuarios.db')
-            c = conexao.cursor()
-            c.execute(" INSERT INTO user_cadastro VALUES(:username, :email, :senha)",
-                {
-                    'username':cadastro['username'],
-                    'email':cadastro['email'],
-                    'senha':cadastro['senha']
-                }
-            )
-            conexao.commit()
-            conexao.close()
-    
->>>>>>> e50b051e8e22c699ff7c866539f56cd7700699a7
 def login_sistema(e):
         '''
             Autenticar Login
