@@ -1,29 +1,25 @@
 import sqlite3
-
 from flet import Text, AlertDialog
 # Criação banco de dados
 
 def create_DB():
     conexao = sqlite3.connect('usuarios.db')
-    conexao = sqlite3.connect('usuarios.db')
     c = conexao.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS user_cadastro(
     c.execute('''CREATE TABLE user_cadastro (
             username text,
             email text,
             senha text
-@@ -13,59 +14,95 @@ def create_DB():
+            )
+        ''')
     conexao.commit()
     conexao.close()
 
-# Importação das variáveis
 
 def init(c, p):
     global components, page
     components = c
     page = p
 
-# Cadastro de usuário
 def verificar_email():
         emails_cadastrados = []
         conexao = sqlite3.connect('usuarios.db')
@@ -52,23 +48,6 @@ def cadastrar_usuario(e):
             'email':  components['email'].current.value,
             'senha':  components['senha'].current.value
         }
-        conexao = sqlite3.connect('usuarios.db')
-
-        c = conexao.cursor()
-
-        c.execute(" INSERT INTO user_cadastro VALUES(:username, :email, :senha)",
-            {
-                'username':cadastro['username'],
-                'email':cadastro['email'],
-                'senha':cadastro['senha']
-            }
-        )
-        conexao.commit()
-        conexao.close()
-
-
-
-#  Login de usuário
         if cadastro['username'] in verificar_user() and cadastro['email'] in verificar_email():
           dlg = AlertDialog(title=Text("username e email ja cadastrado no sistema"),on_dismiss=lambda e: print("Dialog dismissed!"))
           page.dialog = dlg
@@ -96,9 +75,8 @@ def cadastrar_usuario(e):
             )
             conexao.commit()
             conexao.close()
-
+    
 def login_sistema(e):
-        from flet import Text, AlertDialog
         '''
             Autenticar Login
         '''
@@ -107,23 +85,8 @@ def login_sistema(e):
             'senha': components['l_senha'].current.value
         }
         conexao = sqlite3.connect('usuarios.db')      
-        conexao = sqlite3.connect('usuarios.db')      
-
+        
         c = conexao.cursor()
-        c.execute("SELECT senha FROM user_cadastro WHERE username = '{}'".format(login['username']))
-        senha_bd = c.fetchall()
-        conexao.close()
-
-        if login['senha'] == senha_bd[0][0]:
-          dlg = AlertDialog(title=Text(f"Hello {login['username']}!"),on_dismiss=lambda e: print("Dialog dismissed!"))
-          page.dialog = dlg
-          dlg.open = True
-          page.update()
-        else: 
-          dlg = AlertDialog(title=Text("Senha Incorreta!"), on_dismiss=lambda e: print("Dialog dismissed!"))
-          page.dialog = dlg
-          dlg.open = True
-          page.update()
         try:
             c.execute("SELECT senha FROM user_cadastro WHERE username = '{}'".format(login['username']))
             senha_bd = c.fetchall()
@@ -142,4 +105,4 @@ def login_sistema(e):
            dlg = AlertDialog(title=Text("Usuario não cadastrado"), on_dismiss=lambda e: print("Dialog dismissed!"))
            page.dialog = dlg
            dlg.open = True
-           page.update()
+           page.update() 
