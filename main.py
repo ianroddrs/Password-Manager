@@ -173,16 +173,8 @@ def main(page: Page):
     textAppBar = ""; AppBarMenu =AppBar(title=Text(textAppBar), bgcolor=colors.SURFACE_VARIANT,actions=[theme_icon_button,PopupMenuButton(items=[PopupMenuItem()])])
     
     # RAIL NAVIGATION
-    pages = [Container(content=Row(
-                            [
-                                Column(controls=[
-                                        titulo,username,email,senha,botao_cadastrar,
-                                        Container(width=500, bgcolor=colors.BLACK45,height=1,margin=20),
-                                        Text("Já é cadastrado?"),botao_pagina_login,
-                                    ],expand=True,alignment="center",horizontal_alignment="center"
-                                )
-                            ],expand=True,
-                        ),expand=True),
+    pages = [
+        Container(content=Row([Column(controls=[Text("PERFIL"),],expand=True,alignment="center",horizontal_alignment="center")],expand=True,),expand=True),
         Text("SENHAS", visible=False),
         Text("SETTINGS", visible=False),
     ]
