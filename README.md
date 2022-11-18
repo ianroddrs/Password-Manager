@@ -33,3 +33,21 @@
 
 <h4>Observação:</h4>
 <p>Documentar todas as suas funções</p>
+
+<hr>
+
+# Telas do Projeto (em desenvolvimento)
+
+<hr>
+<div align="center">
+
+  ### Tela de Login
+  <img width="550" src="https://user-images.githubusercontent.com/86446951/202618729-d0121d56-33ac-48bc-b7d2-3d0b0da44dd3.png">
+
+  ### Tela de Cadastro
+  <img width="550" src="https://user-images.githubusercontent.com/86446951/202618731-4ceaa7da-8aff-4f2c-a0dc-3f5a274b4508.png">
+  
+  ### Tela do App
+  <img width="550" src="https://user-images.githubusercontent.com/86446951/202618738-a45b080e-95fb-4884-8a62-e38b3b022b87.png">
+</div>
+
