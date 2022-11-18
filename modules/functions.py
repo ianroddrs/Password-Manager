@@ -2,7 +2,7 @@ import sqlite3
 
 # Criação banco de dados
 def create_DB():
-    conexao = sqlite3.connect('Password-Manager/usuarios.db')
+    conexao = sqlite3.connect('usuarios.db')
     c = conexao.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS user_cadastro(
             username text,
@@ -26,7 +26,7 @@ def cadastrar_usuario(e):
             'email':  components['email'].current.value,
             'senha':  components['senha'].current.value
         }
-        conexao = sqlite3.connect('Password-Manager/usuarios.db')
+        conexao = sqlite3.connect('usuarios.db')
         
         c = conexao.cursor()
 
@@ -52,7 +52,7 @@ def login_sistema(e):
             'username': components['l_user'].current.value,
             'senha': components['l_senha'].current.value
         }
-        conexao = sqlite3.connect('Password-Manager/usuarios.db')      
+        conexao = sqlite3.connect('usuarios.db')      
         
         c = conexao.cursor()
         c.execute("SELECT senha FROM user_cadastro WHERE username = '{}'".format(login['username']))

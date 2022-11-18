@@ -1,7 +1,7 @@
 from time import sleep
 import sqlite3
 import flet
-from flet import AppBar, ElevatedButton, Page, Text, View, colors, Container, PopupMenuButton,PopupMenuItem,Row, Icon,icons, NavigationRail,NavigationRailDestination,IconButton,FloatingActionButton,VerticalDivider,Column, ButtonStyle,TextField,FilledButton, TextButton, alignment, AlertDialog
+from flet import AppBar, ElevatedButton, Page, Text, View, colors, Container, PopupMenuButton,PopupMenuItem,Row, Icon,icons, NavigationRail,NavigationRailDestination,IconButton,FloatingActionButton,VerticalDivider,Column, ButtonStyle,TextField,FilledButton,margin, TextButton, alignment, AlertDialog
 from flet.buttons import RoundedRectangleBorder
 from modules.functions import create_DB
 
@@ -10,6 +10,17 @@ create_DB()
 def main(page: Page):
     page.title = "Password Manager"
     page.theme_mode = "light"
+    page.window_min_width = 600
+    page.window_width = 600
+    page.window_min_height = 600
+    page.window_height = 600
+
+    #ABRIR RAIL
+    def open_rail(e):
+        rail.visible = True if rail.visible == False else False
+        OpenRailMenu.selected = not OpenRailMenu.selected
+        sleep(0.2)
+        page.update()
 
     #MUDAR TEMA
     def change_theme(e):
@@ -26,7 +37,7 @@ def main(page: Page):
             'senha':  senha.value
         }
 
-        conexao = sqlite3.connect('Password-Manager/usuarios.db')
+        conexao = sqlite3.connect('usuarios.db')
     
         c = conexao.cursor()
 
@@ -59,7 +70,7 @@ def main(page: Page):
             'username': l_username.value,
             'senha': l_senha.value
         }
-        conexao = sqlite3.connect('Password-Manager/usuarios.db')      
+        conexao = sqlite3.connect('usuarios.db')      
         
         c = conexao.cursor()
         c.execute("SELECT senha FROM user_cadastro WHERE username = '{}'".format(login['username']))
@@ -82,10 +93,9 @@ def main(page: Page):
             dlg.open = True
             page.update()
 
+    #MENUS
 
-    #CONTROLS
-
-    #login de usuário
+    #MENU USUÁRIO
     titulo_login = Text(value='Entre',weight='bold')
     l_username = TextField(label='Username',autofocus=True,expand=False,prefix_icon=icons.ACCOUNT_CIRCLE,width=500)
     l_senha = TextField(label='Senha',border_color=colors.BLACK,password=True,can_reveal_password=True,prefix_icon=icons.PASSWORD,width=500)
@@ -94,7 +104,7 @@ def main(page: Page):
     botao_pagina_cadastrar = TextButton(text="CADASTRAR",on_click= lambda _: page.go("/cadastro"), style=ButtonStyle(color={"hovered": colors.BLUE_900,},))
 
 
-    #cadastro de usuário
+    #MENU CADASTRO USUÁRIO
     titulo = Text(value='Cadastre-se',weight='bold')
     username = TextField(label='Username',autofocus=True,prefix_icon=icons.ACCOUNT_CIRCLE,width=500)
     email = TextField(label='E-mail', border_color=colors.BLACK,prefix_icon=icons.EMAIL,width=500)
@@ -102,53 +112,64 @@ def main(page: Page):
     botao_cadastrar = FilledButton(text='Cadastrar',width=500,on_click=cadastrar_usuario,style=ButtonStyle(shape={"hovered": RoundedRectangleBorder(radius=20),"": RoundedRectangleBorder(radius=5)},))
     botao_pagina_login = TextButton(text="FAÇA LOGIN",on_click= lambda _: page.go("/"), style=ButtonStyle(color={"hovered": colors.BLUE_900,},))
 
+    #MENU APPBAR
+    OpenRailMenu = IconButton(icon=icons.MENU_OPEN, selected_icon=icons.MENU_OUTLINED, on_click=open_rail)
+    theme_icon_button = IconButton(icons.DARK_MODE, selected_icon=icons.LIGHT_MODE, icon_color=colors.BLACK,icon_size=25, tooltip="change theme", on_click=change_theme,style=ButtonStyle(color={"": colors.BLACK, "selected": colors.WHITE}, ), )
+    textAppBar = ""; AppBarMenu =AppBar(title=Text(textAppBar), bgcolor=colors.SURFACE_VARIANT,actions=[theme_icon_button,PopupMenuButton(items=[PopupMenuItem()])])
+    
+    # RAIL NAVIGATION
+    pages = [
+        Text("PERFIL", visible=False),
+        Text("SENHAS", visible=False),
+        Text("SETTINGS", visible=False),
+    ]
+
+    def fab_click(e):
+        rail.selected_index = 2
+        select_page()
+        page.update()
+
+    def select_page():
+        print(f"Selected index: {rail.selected_index}")
+        for index, p in enumerate(pages):
+            p.visible = True if index == rail.selected_index else False
+        page.update()
+
+    def dest_change(e):
+        select_page()
 
 
     rail = NavigationRail(
         selected_index=0,
         label_type="all",
-        bgcolor=colors.BLUE_50,
         extended=False,
-        min_width=100,
-        min_extended_width=400,
-        leading=FloatingActionButton(icon=icons.CREATE, text="Add"),
-        group_alignment=-0.9,
+        min_width=90,
+        leading=Container(content=FloatingActionButton(icon=icons.ADD,width=100, text="GERAR"),margin=margin.only(bottom=10)),
+        group_alignment=0,
+        trailing = Container(content=FilledButton(icon=icons.EXIT_TO_APP,text='SAIR',width=100,on_click=lambda e: page.go("/"),style=ButtonStyle(shape={"hovered": RoundedRectangleBorder(radius=20),"": RoundedRectangleBorder(radius=5)},bgcolor=colors.RED)),margin=margin.symmetric(vertical=150),),
         destinations=[
             NavigationRailDestination(
-                icon=icons.FAVORITE_BORDER, selected_icon=icons.FAVORITE, label="First"
+                icon=icons.ACCOUNT_CIRCLE, label="PERFIL"
             ),
             NavigationRailDestination(
-                icon_content=Icon(icons.BOOKMARK_BORDER),
-                selected_icon_content=Icon(icons.BOOKMARK),
-                label="Second",
+                icon_content=Icon(icons.PASSWORD),label="SENHAS",
             ),
             NavigationRailDestination(
-                icon=icons.SETTINGS_OUTLINED,
-                selected_icon_content=Icon(icons.SETTINGS),
-                label_content=Text("Settings"),
+                icon=icons.SETTINGS_OUTLINED, label_content=Text("SETTINGS"),
             ),
         ],
-        on_change=lambda e: print("Selected destination:", e.control.selected_index),
+        on_change=dest_change,
     )
 
-    theme_icon_button = IconButton(icons.DARK_MODE, selected_icon=icons.LIGHT_MODE, icon_color=colors.BLACK,
-                                   icon_size=25, tooltip="change theme", on_click=change_theme,
-                                   style=ButtonStyle(color={"": colors.BLACK, "selected": colors.WHITE}, ), )
-
     def route_change(route):
+        AppBarMenu.title = Text("Login")
+        AppBarMenu.leading = None
         page.views.clear()
         page.views.append(
             View(
                 "/",
                 [
-                    AppBar(title=Text("Login"), bgcolor=colors.SURFACE_VARIANT,actions=[
-                        theme_icon_button,
-                        PopupMenuButton(
-                            items=[
-                                PopupMenuItem()
-                            ]
-                        )
-                    ]),
+                    AppBarMenu,
                     Container(content=Row(
                         [
                             Column(controls=[
@@ -161,35 +182,17 @@ def main(page: Page):
                             )
                         ],expand=True,
                     ),expand=True),
-                    
-                    
                 ]
             )
         )
-        if page.route == "/Perfil":
-            page.views.append(
-                View(
-                    "/Perfil",
-                    [
-                        AppBar(title=Text("Perfil"), bgcolor=colors.SURFACE_VARIANT, leading=IconButton(icons.PUBLIC_OFF)),
-                        Row([rail,VerticalDivider(width=1), ElevatedButton("Sair", on_click=lambda _: page.go("/")),],expand=True)
-                       
-                    ],
-                )
-            )
-        elif page.route == "/cadastro":
+        if page.route == "/cadastro":
+            AppBarMenu.title = Text("Cadastro")
+            AppBarMenu.leading = None
             page.views.append(
                 View(
                     "/cadastro",
                     [
-                        AppBar(title=Text("Cadastro"), bgcolor=colors.SURFACE_VARIANT,actions=[
-                        theme_icon_button,
-                        PopupMenuButton(
-                            items=[
-                                PopupMenuItem()
-                            ]
-                        )
-                    ]),
+                        AppBarMenu,
                         Container(content=Row(
                             [
                                 Column(controls=[
@@ -200,6 +203,19 @@ def main(page: Page):
                                 )
                             ],expand=True,
                         ),expand=True),
+                       
+                    ],
+                )
+            )
+        elif page.route == "/Perfil":
+            AppBarMenu.title = Text("Perfil")
+            AppBarMenu.leading = OpenRailMenu
+            page.views.append(
+                View(
+                    "/Perfil",
+                    [
+                        AppBarMenu,
+                        Row([rail,VerticalDivider(width=1),Column(pages,expand=True)],expand=True)
                        
                     ],
                 )
