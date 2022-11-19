@@ -153,7 +153,7 @@ def main(page: Page):
     #MENUS
 
     #MENU LOGIN USUÁRIO
-    titulo_login = Text(value='Entre',weight='bold')
+    titulo_login = Text(value='Entre',weight='bold',size=30)
     l_username = TextField(label='Username',autofocus=True,expand=False,prefix_icon=icons.ACCOUNT_CIRCLE,width=500)
     l_senha = TextField(label='Senha',border_color=colors.BLACK,password=True,can_reveal_password=True,prefix_icon=icons.PASSWORD,width=500)
     esqueceu_senha = TextButton(text="Redefinir senha",on_click= lambda _: print(""), style=ButtonStyle(color={"hovered": colors.BLUE_900,},bgcolor={"hovered": colors.TRANSPARENT, "": colors.TRANSPARENT},))
@@ -162,8 +162,10 @@ def main(page: Page):
     global logado; logado = False
 
     #MENU CADASTRO USUÁRIO
-    titulo = Text(value='Cadastre-se',weight='bold')
-    username = TextField(label='Username',autofocus=True,prefix_icon=icons.ACCOUNT_CIRCLE,width=500)
+    titulo = Text(value='Cadastre-se',weight='bold',size=30)
+    nome = TextField(label='Nome',autofocus=True,prefix_icon=icons.ACCOUNT_CIRCLE,width=245)
+    sobrenome = TextField(label='Sobrenome',prefix_icon=icons.ACCOUNT_CIRCLE,width=245)
+    username = TextField(label='Username',prefix_icon=icons.ACCOUNT_CIRCLE,width=500)
     email = TextField(label='E-mail', border_color=colors.BLACK,prefix_icon=icons.EMAIL,width=500)
     senha = TextField(label='Senha',border_color=colors.BLACK,password=True,can_reveal_password=True,prefix_icon=icons.PASSWORD,width=500)
     botao_cadastrar = FilledButton(text='Cadastrar',width=500,on_click=cadastrar_usuario,style=ButtonStyle(shape={"hovered": RoundedRectangleBorder(radius=20),"": RoundedRectangleBorder(radius=5)},))
@@ -241,7 +243,8 @@ def main(page: Page):
                     Container(content=Row(
                         [
                             Column(controls=[
-                                    titulo_login,l_username,l_senha, 
+                                    Container(content=titulo_login,width=500,alignment=alignment.center_left,margin=margin.only(bottom=15)),
+                                    l_username,l_senha, 
                                     Container(content=esqueceu_senha,width=500,alignment=alignment.center_left),
                                     botao_login,
                                     Container(width=500, bgcolor=colors.BLACK45,height=1,margin=20),
@@ -264,7 +267,8 @@ def main(page: Page):
                         Container(content=Row(
                             [
                                 Column(controls=[
-                                        titulo,username,email,senha,botao_cadastrar,
+                                        Container(content=titulo,width=500,alignment=alignment.center_left,margin=margin.only(bottom=15)),
+                                        Row([nome,sobrenome,],alignment="center"),username,email,senha,botao_cadastrar,
                                         Container(width=500, bgcolor=colors.BLACK45,height=1,margin=20),
                                         Text("Já é cadastrado?"),botao_pagina_login,
                                     ],expand=True,alignment="center",horizontal_alignment="center"
