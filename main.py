@@ -196,16 +196,16 @@ def main(page: Page):
     botao_pagina_login = TextButton(text="FAÇA LOGIN",on_click= lambda _: page.go("/"), style=ButtonStyle(color={"hovered": colors.BLUE_900,},))
 
     #MENU APPBAR
-    OpenRailMenu = IconButton(icon=icons.MENU_OPEN, selected_icon=icons.MENU_OUTLINED, on_click=open_rail)
+    OpenRailMenu = IconButton(icon=icons.MENU_OUTLINED, selected_icon=icons.MENU_OPEN, on_click=open_rail)
     theme_icon_button = IconButton(icons.DARK_MODE, selected_icon=icons.LIGHT_MODE, icon_color=colors.BLACK,icon_size=25, tooltip="change theme", on_click=change_theme,style=ButtonStyle(color={"": colors.BLACK, "selected": colors.WHITE}, ), )
-    textAppBar = ""; AppBarMenu =AppBar(title=Text(textAppBar), bgcolor=colors.SURFACE_VARIANT,actions=[theme_icon_button,PopupMenuButton(items=[PopupMenuItem()])])
-    
-    # MENU RECUPERAR SENHA
+    textAppBar = ""; AppBarMenu =AppBar(leading_width=110,title=Text(textAppBar), bgcolor=colors.SURFACE_VARIANT,actions=[theme_icon_button,PopupMenuButton(items=[PopupMenuItem()])])
+
+    #MENU RECUPERAR SENHA
     titulo_recuperar_senha = Text(value='Recupere sua Senha',weight='bold',size=30)
-    botao_recuperar_senha = TextButton(text="Esqueceu Senha?",on_click= lambda _: page.go("/recuperar"), style=ButtonStyle(color={"hovered": colors.BLUE_900,},))
     email_cadastrado= TextField(label='E-mail Cadastrado', border_color=colors.BLACK,prefix_icon=icons.EMAIL,width=500)
     botao_verificar_email  = FilledButton(text='VERIFICAR',on_click=recuperar_senha,width=500,style=ButtonStyle(shape={"hovered": RoundedRectangleBorder(radius=20),"": RoundedRectangleBorder(radius=5)},))
     nova_senha = TextField(label='Nova Senha',border_color=colors.BLACK,password=True,can_reveal_password=True,prefix_icon=icons.PASSWORD,width=500)
+    
     #LOGOUT DE SISTEMA
     def logout(e):
         page.go("/")
@@ -222,7 +222,7 @@ def main(page: Page):
             expand=True,bgcolor=colors.AMBER,
             content=Row(
                 [
-                    Container(expand=True,bgcolor=colors.BLUE),
+                    Container(scale=0.5,expand=True,bgcolor=colors.BLUE),
                     Container(expand=True,bgcolor=colors.RED,),
                 ]
             )
