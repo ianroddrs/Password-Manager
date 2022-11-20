@@ -1,7 +1,7 @@
 from time import sleep
 import sqlite3
 import flet
-from flet import AppBar, Page, Text, View, colors,Container, PopupMenuButton,PopupMenuItem,Row, Icon,icons, NavigationRail,NavigationRailDestination,IconButton,FloatingActionButton,VerticalDivider,Column, ButtonStyle,TextField,FilledButton,margin, TextButton, alignment, AlertDialog
+from flet import AppBar, Page, Text, View ,ElevatedButton, colors,Container, PopupMenuButton,PopupMenuItem,Row, Icon,icons, NavigationRail,NavigationRailDestination,IconButton,FloatingActionButton,VerticalDivider,Column, ButtonStyle,TextField,FilledButton,margin, TextButton, alignment, AlertDialog
 from flet.buttons import RoundedRectangleBorder
 
 def create_DB():
@@ -21,10 +21,8 @@ create_DB()
 def main(page: Page):
     page.title = "Password Manager"
     page.theme_mode = "light"
-    page.window_min_width = 600
-    page.window_width = 600
+    page.window_min_width = 550
     page.window_min_height = 600
-    page.window_height = 600
 
     #ABRIR/FECHAR RAIL
     def open_rail(e):
@@ -163,8 +161,8 @@ def main(page: Page):
 
     #MENU CADASTRO USUÁRIO
     titulo = Text(value='Cadastre-se',weight='bold',size=30)
-    nome = TextField(label='Nome',autofocus=True,prefix_icon=icons.ACCOUNT_CIRCLE,width=245)
-    sobrenome = TextField(label='Sobrenome',prefix_icon=icons.ACCOUNT_CIRCLE,width=245)
+    nome = TextField(label='Nome',autofocus=True,prefix_icon=icons.PERSON,width=245)
+    sobrenome = TextField(label='Sobrenome',prefix_icon=icons.PERSON,width=245)
     username = TextField(label='Username',prefix_icon=icons.ACCOUNT_CIRCLE,width=500)
     email = TextField(label='E-mail', border_color=colors.BLACK,prefix_icon=icons.EMAIL,width=500)
     senha = TextField(label='Senha',border_color=colors.BLACK,password=True,can_reveal_password=True,prefix_icon=icons.PASSWORD,width=500)
@@ -174,7 +172,7 @@ def main(page: Page):
     #MENU APPBAR
     OpenRailMenu = IconButton(icon=icons.MENU_OPEN, selected_icon=icons.MENU_OUTLINED, on_click=open_rail)
     theme_icon_button = IconButton(icons.DARK_MODE, selected_icon=icons.LIGHT_MODE, icon_color=colors.BLACK,icon_size=25, tooltip="change theme", on_click=change_theme,style=ButtonStyle(color={"": colors.BLACK, "selected": colors.WHITE}, ), )
-    textAppBar = ""; AppBarMenu =AppBar(title=Text(textAppBar), bgcolor=colors.SURFACE_VARIANT,actions=[theme_icon_button,PopupMenuButton(items=[PopupMenuItem()])])
+    textAppBar = ""; AppBarMenu =AppBar(leading_width=110,title=Text(textAppBar), bgcolor=colors.SURFACE_VARIANT,actions=[theme_icon_button,PopupMenuButton(items=[PopupMenuItem()])])
 
     #LOGOUT DE SISTEMA
     def logout(e):
@@ -182,13 +180,23 @@ def main(page: Page):
         global logado; logado = False
 
     #BOTÃO DE SAIR
-    btn_logout = Container(content=FilledButton(icon=icons.EXIT_TO_APP,text='SAIR',width=100,on_click=logout,style=ButtonStyle(shape={"hovered": RoundedRectangleBorder(radius=20),"": RoundedRectangleBorder(radius=5)})),margin=margin.symmetric(vertical=150),)
+    btn_logout = Container(content=ElevatedButton(color=colors.WHITE,bgcolor=colors.RED,icon=icons.ARROW_LEFT,text='SAIR',width=100,height=50,on_click=logout,style=ButtonStyle(shape={"hovered": RoundedRectangleBorder(radius=20),"": RoundedRectangleBorder(radius=5)})),margin=margin.only(top=50))
 
     
     # RAIL NAVIGATION
     pages = [
         Text("PERFIL", visible=False),
-        Text("SENHAS", visible=False),
+        Container(
+            expand=True,bgcolor=colors.AMBER,
+            content=Row(
+                [
+                    Container(expand=True,bgcolor=colors.BLUE),
+                    Container(expand=True,bgcolor=colors.RED,),
+                ]
+            )
+
+
+        ),
         Text("SETTINGS", visible=False),
     ]
 
@@ -201,6 +209,13 @@ def main(page: Page):
         print(f"Selected index: {rail.selected_index}")
         for index, p in enumerate(pages):
             p.visible = True if index == rail.selected_index else False
+
+        if rail.selected_index == 0:
+            AppBarMenu.title = Text("Perfil")
+        elif rail.selected_index == 1:
+            AppBarMenu.title = Text("Senhas")
+        elif rail.selected_index == 2:
+            AppBarMenu.title = Text("Settings")
         page.update()
 
     def dest_change(e):
@@ -208,19 +223,20 @@ def main(page: Page):
 
 
     rail = NavigationRail(
-        selected_index=0,
+        visible=False,
+        selected_index=1,
         label_type="all",
         extended=False,
         min_width=90,
-        leading=Container(content=FloatingActionButton(icon=icons.ADD,width=100, text="GERAR"),margin=margin.only(bottom=10)),
-        group_alignment=0,
+        leading=Container(content=FloatingActionButton(icon=icons.ADD,width=100, text="GERAR",on_click=fab_click),margin=margin.only(bottom=15)),
+        group_alignment=-1,
         trailing = btn_logout,
         destinations=[
             NavigationRailDestination(
                 icon=icons.ACCOUNT_CIRCLE, label="PERFIL"
             ),
             NavigationRailDestination(
-                icon_content=Icon(icons.PASSWORD),label="SENHAS",
+                icon_content=Icon(icons.KEY),label="SENHAS",
             ),
             NavigationRailDestination(
                 icon=icons.SETTINGS_OUTLINED, label_content=Text("SETTINGS"),
@@ -271,7 +287,7 @@ def main(page: Page):
                                         Row([nome,sobrenome,],alignment="center"),username,email,senha,botao_cadastrar,
                                         Container(width=500, bgcolor=colors.BLACK45,height=1,margin=20),
                                         Text("Já é cadastrado?"),botao_pagina_login,
-                                    ],expand=True,alignment="center",horizontal_alignment="center"
+                                    ],scroll="hidden",expand=True,alignment="center",horizontal_alignment="center"
                                 )
                             ],expand=True,
                         ),expand=True),
@@ -281,7 +297,7 @@ def main(page: Page):
             )
         elif page.route == "/Perfil":
             if logado:
-                AppBarMenu.title = Text("Perfil")
+                AppBarMenu.title = Text("Senhas")
                 AppBarMenu.leading = OpenRailMenu
                 page.views.append(
                     View(
@@ -326,4 +342,4 @@ def main(page: Page):
 
 
 
-flet.app(target=main,view=flet.WEB_BROWSER) #view=flet.WEB_BROWSER
+flet.app(target=main) #view=flet.WEB_BROWSER

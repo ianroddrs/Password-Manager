@@ -1,42 +1,47 @@
-import flet
-from flet import Page,Row,Container,colors,Text,border,Column,TextField,icons,FloatingActionButton, FilledButton,ButtonStyle,RoundedRectangleBorder
+import flet as ft
+from flet import AppBar, Page, Text, View ,ElevatedButton, colors,Container, PopupMenuButton,PopupMenuItem,Row, Icon,icons, NavigationRail,NavigationRailDestination,IconButton,FloatingActionButton,VerticalDivider,Column, ButtonStyle,TextField,FilledButton,margin, TextButton, alignment, AlertDialog
 
-def main(page: Page):
-    page.title = "Password Manager"
-    page.theme_mode = "light"
-    page.window_min_width = 600
-    page.window_width = 600
-    page.window_min_height = 600
-    page.window_height = 600
 
-    page.add(
-        Container(
-            content=Column(
-                [
-                    Row([Text("Ian Rodrigues",size=40,weight="bold")],alignment="center"),
-                    Container(bgcolor=colors.BLACK45,height=1,margin=20),
-                    Row(
-                        [
-                            TextField(scale=0.8,label='Username',prefix_icon=icons.ACCOUNT_CIRCLE,value="Ian Rodrigues"),
-                            FloatingActionButton(scale=0.7,icon=icons.CHECK)
-                        ],alignment="center"
-                    ),
-                    Row(
-                        [
-                            TextField(scale=0.8,label='E-mail',prefix_icon=icons.ACCOUNT_CIRCLE,value="ian@gmail.com"),
-                            FloatingActionButton(scale=0.7,icon=icons.CHECK)
-                        ],alignment="center"
-                    ),
+def main(page: ft.Page):
+    page.title = "AlertDialog examples"
 
-                    FilledButton(text='Mudar Senha',width=310,style=ButtonStyle(shape={"hovered": RoundedRectangleBorder(radius=20),"": RoundedRectangleBorder(radius=5)},))
-
-                    
-                    
-                ],horizontal_alignment="center"
-            ),border=border.all(1),border_radius=20,padding=15,
-        ),
+    dlg = ft.AlertDialog(
+        title=ft.Text("Hello, you!"), on_dismiss=lambda e: print("Dialog dismissed!")
     )
 
+    def close_dlg(e):
+        dlg_modal.open = False
+        page.update()
 
+    dlg_modal = ft.AlertDialog(
+        modal=True,
+        title=ft.Text("Please confirm"),
+        content=Container(content=Row(
+                            [
+                                Column(controls=[
+                                        Container(content=Text("123123"),width=500,alignment=alignment.center_left,margin=margin.only(bottom=15)),
+                                        Row([TextField(label="oioi"),TextField(label="alkh"),]),
+                                        FilledButton(text="lasihd")
+                                    ],scroll="hidden",expand=True,alignment="center",horizontal_alignment="center"
+                                )
+                            ],expand=True,
+                        ),expand=True),
+        on_dismiss=lambda e: print("Modal dialog dismissed!"),
+    )
 
-flet.app(target=main)
+    def open_dlg(e):
+        page.dialog = dlg
+        dlg.open = True
+        page.update()
+
+    def open_dlg_modal(e):
+        page.dialog = dlg_modal
+        dlg_modal.open = True
+        page.update()
+
+    page.add(
+        ft.ElevatedButton("Open dialog", on_click=open_dlg),
+        ft.ElevatedButton("Open modal dialog", on_click=open_dlg_modal),
+    )
+
+ft.app(target=main)
