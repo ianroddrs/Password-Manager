@@ -7,12 +7,19 @@ from flet.buttons import RoundedRectangleBorder
 def create_DB():
     conexao = sqlite3.connect('usuarios.db')
     c = conexao.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS user_cadastro (
-            username text,
-            email text,
-            senha text
-            )
-        ''')
+    try:
+        c.execute('''CREATE TABLE IF NOT EXISTS user_cadastro (
+                user_id integer primary key autoincrement,
+                username text,
+                email text,
+                senha text,
+                nome text,
+                sobrenome text
+                )
+            ''')
+        c.execute
+    except:
+        pass
     conexao.commit()
     conexao.close()
 
@@ -66,23 +73,17 @@ def main(page: Page):
 
     #CADASTRAR USUÁRIO
     def cadastrar_usuario(e):
-        cadastro = {
-            'username': username.value,
-            'email':  email.value,
-            'senha':  senha.value
-        }
-
-        if cadastro['username'] in verificar_user() and cadastro['email'] in verificar_email():
+        if username.value in verificar_user() and email.value in verificar_email():
             dlg = AlertDialog(title=Text("username e email ja cadastrado no sistema"),on_dismiss=lambda e: print("Dialog dismissed!"))
             page.dialog = dlg
             dlg.open = True
             page.update()
-        elif cadastro['username'] in verificar_user():
+        elif username.value in verificar_user():
             dlg = AlertDialog(title=Text("username ja cadastrado no sistema"),on_dismiss=lambda e: print("Dialog dismissed!"))
             page.dialog = dlg
             dlg.open = True
             page.update()
-        elif cadastro['email'] in verificar_email():
+        elif email.value in verificar_email():
             dlg = AlertDialog(title=Text("email ja cadastrado no sistema"),on_dismiss=lambda e: print("Dialog dismissed!"))
             page.dialog = dlg
             dlg.open = True
@@ -90,19 +91,17 @@ def main(page: Page):
         else:
             conexao = sqlite3.connect('usuarios.db')
             c = conexao.cursor()
-            c.execute(" INSERT INTO user_cadastro VALUES(:username, :email, :senha)",
-                {
-                    'username':cadastro['username'],
-                    'email':cadastro['email'],
-                    'senha':cadastro['senha']
-                }
-            )
+            query = "INSERT INTO user_cadastro(nome, sobrenome, username, email, senha) VALUES (?, ?, ?, ?, ?)"
+            valores = (nome.value,sobrenome.value,username.value,email.value,senha.value)
+            c.execute(query,valores)
             conexao.commit()
             conexao.close()
 
             username.value = ""
             senha.value = ""
             email.value = ""
+            nome.value = ""
+            sobrenome.value = ""
 
             dlg = AlertDialog(title=Text(f"Cadastro realizado com sucesso!"),on_dismiss=lambda e: print("Dialog dismissed!"))
             page.dialog = dlg
@@ -147,14 +146,41 @@ def main(page: Page):
             dlg.open = True
             page.update()
 
+    # Recuperar Senha
+    def recuperar_senha(e):    
+        if email_cadastrado.value in verificar_email():
+                dlg = AlertDialog(title=Text(f"Digite sua nova senha"),content = nova_senha,actions=[
+                FilledButton("Alterar senha",on_click=inserir_nova_senha)
+            ],on_dismiss=lambda e: print("Dialog dismissed!"))
+                page.dialog = dlg
+                dlg.open = True
+                page.update()
+        else:
+            dlg = AlertDialog(title=Text("Esse E-mail não pertence a nenhuma conta!"), on_dismiss=lambda e: print("Dialog dismissed!"))
+            page.dialog = dlg
+            dlg.open = True
+            page.update()
     
+    # Inserir nova senha no banco de dados
+    def inserir_nova_senha(e):
+        conexao = sqlite3.connect('usuarios.db')  
+        c = conexao.cursor()
+        dlg = AlertDialog(title=Text(f"Senha alterada!"),on_dismiss=lambda e: print("Dialog dismissed!"))
+        senha_update = """Update user_cadastro set senha = ? where email = ?"""
+        valores = (nova_senha.value,email_cadastrado.value)
+        c.execute(senha_update,valores)
+        conexao.commit()
+        conexao.close()
+        page.dialog = dlg
+        dlg.open = True
+        page.update()
     #MENUS
 
     #MENU LOGIN USUÁRIO
     titulo_login = Text(value='Entre',weight='bold',size=30)
     l_username = TextField(label='Username',autofocus=True,expand=False,prefix_icon=icons.ACCOUNT_CIRCLE,width=500)
     l_senha = TextField(label='Senha',border_color=colors.BLACK,password=True,can_reveal_password=True,prefix_icon=icons.PASSWORD,width=500)
-    esqueceu_senha = TextButton(text="Redefinir senha",on_click= lambda _: print(""), style=ButtonStyle(color={"hovered": colors.BLUE_900,},bgcolor={"hovered": colors.TRANSPARENT, "": colors.TRANSPARENT},))
+    esqueceu_senha = TextButton(text="Redefinir senha",on_click= lambda _: page.go("/recuperar"), style=ButtonStyle(color={"hovered": colors.BLUE_900,},bgcolor={"hovered": colors.TRANSPARENT, "": colors.TRANSPARENT},))
     botao_login = FilledButton(text='Entrar',on_click=login_sistema,width=500,style=ButtonStyle(shape={"hovered": RoundedRectangleBorder(radius=20),"": RoundedRectangleBorder(radius=5)},))
     botao_pagina_cadastrar = TextButton(text="CADASTRAR",on_click= lambda _: page.go("/cadastro"), style=ButtonStyle(color={"hovered": colors.BLUE_900,},))
     global logado; logado = False
@@ -172,8 +198,14 @@ def main(page: Page):
     #MENU APPBAR
     OpenRailMenu = IconButton(icon=icons.MENU_OPEN, selected_icon=icons.MENU_OUTLINED, on_click=open_rail)
     theme_icon_button = IconButton(icons.DARK_MODE, selected_icon=icons.LIGHT_MODE, icon_color=colors.BLACK,icon_size=25, tooltip="change theme", on_click=change_theme,style=ButtonStyle(color={"": colors.BLACK, "selected": colors.WHITE}, ), )
-    textAppBar = ""; AppBarMenu =AppBar(leading_width=110,title=Text(textAppBar), bgcolor=colors.SURFACE_VARIANT,actions=[theme_icon_button,PopupMenuButton(items=[PopupMenuItem()])])
-
+    textAppBar = ""; AppBarMenu =AppBar(title=Text(textAppBar), bgcolor=colors.SURFACE_VARIANT,actions=[theme_icon_button,PopupMenuButton(items=[PopupMenuItem()])])
+    
+    # MENU RECUPERAR SENHA
+    titulo_recuperar_senha = Text(value='Recupere sua Senha',weight='bold',size=30)
+    botao_recuperar_senha = TextButton(text="Esqueceu Senha?",on_click= lambda _: page.go("/recuperar"), style=ButtonStyle(color={"hovered": colors.BLUE_900,},))
+    email_cadastrado= TextField(label='E-mail Cadastrado', border_color=colors.BLACK,prefix_icon=icons.EMAIL,width=500)
+    botao_verificar_email  = FilledButton(text='VERIFICAR',on_click=recuperar_senha,width=500,style=ButtonStyle(shape={"hovered": RoundedRectangleBorder(radius=20),"": RoundedRectangleBorder(radius=5)},))
+    nova_senha = TextField(label='Nova Senha',border_color=colors.BLACK,password=True,can_reveal_password=True,prefix_icon=icons.PASSWORD,width=500)
     #LOGOUT DE SISTEMA
     def logout(e):
         page.go("/")
@@ -295,6 +327,27 @@ def main(page: Page):
                     ],
                 )
             )
+        elif page.route == "/recuperar":
+            AppBarMenu.title = Text("Recuperação de Senha")
+            AppBarMenu.leading = None
+            page.views.append(
+                View(
+                    "/recuperar",
+                    [
+                        AppBarMenu,
+                        Container(content=Row(
+                            [
+                                Column(controls=[
+                                        Container(content=titulo_recuperar_senha,width=500,alignment=alignment.center_left,margin=margin.only(bottom=15)),
+                                        Row([email_cadastrado],alignment="center"),botao_verificar_email
+                                    ],expand=True,alignment="center",horizontal_alignment="center"
+                                )
+                            ],expand=True,
+                        ),expand=True),
+                       
+                    ],
+                )
+            )          
         elif page.route == "/Perfil":
             if logado:
                 AppBarMenu.title = Text("Senhas")
@@ -325,8 +378,7 @@ def main(page: Page):
                             )
                         ],
                     )
-                )
-
+                )          
 
         page.update()
     
