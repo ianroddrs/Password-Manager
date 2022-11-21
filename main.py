@@ -31,20 +31,6 @@ def main(page: Page):
     page.window_min_width = 550
     page.window_min_height = 600
 
-    #ABRIR/FECHAR RAIL
-    def open_rail(e):
-        rail.visible = True if rail.visible == False else False
-        OpenRailMenu.selected = not OpenRailMenu.selected
-        sleep(0.2)
-        page.update()
-
-    #MUDAR TEMA
-    def change_theme(e):
-        page.theme_mode = "light" if page.theme_mode == "dark" else "dark"
-        theme_icon_button.selected = not theme_icon_button.selected
-        sleep(0.2)
-        page.update()
-
     #VERIFICAÇÃO DE EMAIL
     def verificar_email():
         emails_cadastrados = []
@@ -174,6 +160,32 @@ def main(page: Page):
         page.dialog = dlg
         dlg.open = True
         page.update()
+
+    #ABRIR/FECHAR RAIL
+    def open_rail(e):
+        rail.visible = True if rail.visible == False else False
+        OpenRailMenu.selected = not OpenRailMenu.selected
+        sleep(0.2)
+        page.update()
+
+    #MUDAR TEMA
+    def change_theme(e):
+        page.theme_mode = "light" if page.theme_mode == "dark" else "dark"
+        theme_icon_button.selected = not theme_icon_button.selected
+        sleep(0.2)
+        page.update()
+
+    #LOGOUT DE SISTEMA
+    def logout(e):
+        page.go("/")
+        global logado; logado = False
+
+    #IR PARA RAIL SELECIONADO
+    def fab_click(e):
+        rail.selected_index = 2
+        select_page()
+        page.update()
+
     #MENUS
 
     #MENU LOGIN USUÁRIO
@@ -206,36 +218,24 @@ def main(page: Page):
     botao_verificar_email  = FilledButton(text='VERIFICAR',on_click=recuperar_senha,width=500,style=ButtonStyle(shape={"hovered": RoundedRectangleBorder(radius=20),"": RoundedRectangleBorder(radius=5)},))
     nova_senha = TextField(label='Nova Senha',border_color=colors.BLACK,password=True,can_reveal_password=True,prefix_icon=icons.PASSWORD,width=500)
     
-    #LOGOUT DE SISTEMA
-    def logout(e):
-        page.go("/")
-        global logado; logado = False
-
-    #BOTÃO DE SAIR
+    #RAIL NAVIGATION
+    #BOTÕES GERAR E SAIR
     btn_logout = Container(content=ElevatedButton(color=colors.WHITE,bgcolor=colors.RED,icon=icons.ARROW_LEFT,text='SAIR',width=100,height=50,on_click=logout,style=ButtonStyle(shape={"hovered": RoundedRectangleBorder(radius=20),"": RoundedRectangleBorder(radius=5)})),margin=margin.only(top=50))
-
+    btn_gerar = Container(content=FloatingActionButton(icon=icons.ADD,width=100, text="GERAR",on_click=fab_click),margin=margin.only(bottom=15))
     
-    # RAIL NAVIGATION
+    #PAGINAS
     pages = [
         Text("PERFIL", visible=False),
-        Container(
-            expand=True,bgcolor=colors.AMBER,
+        Container(expand=True,bgcolor=colors.AMBER,
             content=Row(
                 [
                     Container(scale=0.5,expand=True,bgcolor=colors.BLUE),
                     Container(expand=True,bgcolor=colors.RED,),
                 ]
             )
-
-
         ),
         Text("SETTINGS", visible=False),
     ]
-
-    def fab_click(e):
-        rail.selected_index = 2
-        select_page()
-        page.update()
 
     def select_page():
         print(f"Selected index: {rail.selected_index}")
@@ -260,7 +260,7 @@ def main(page: Page):
         label_type="all",
         extended=False,
         min_width=90,
-        leading=Container(content=FloatingActionButton(icon=icons.ADD,width=100, text="GERAR",on_click=fab_click),margin=margin.only(bottom=15)),
+        leading=btn_gerar,
         group_alignment=-1,
         trailing = btn_logout,
         destinations=[
@@ -382,7 +382,6 @@ def main(page: Page):
 
         page.update()
     
-
     def view_pop(view):
         page.views.pop()
         top_view = page.views[-1]
