@@ -3,7 +3,6 @@ import sqlite3
 import flet
 from flet import AppBar, Page, Text, View ,ElevatedButton, colors,Container, PopupMenuButton,PopupMenuItem,Row, Icon,icons, NavigationRail,NavigationRailDestination,IconButton,FloatingActionButton,VerticalDivider,Column, ButtonStyle,TextField,FilledButton,margin, TextButton, alignment, AlertDialog
 from flet.buttons import RoundedRectangleBorder
-
 def create_DB():
     conexao = sqlite3.connect('usuarios.db')
     c = conexao.cursor()
@@ -43,7 +42,16 @@ def main(page: Page):
         conexao.commit()
         conexao.close()
         return emails_cadastrados
-
+    
+    # VALIDAR EMAIL
+    def validar_email(email):  
+        import re
+        regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
+        if(re.search(regex,email)):  
+            return("Valid Email")     
+        else:  
+            return("Invalid Email")
+    
     #VERIFICAÇÃO DE USUÁRIO
     def verificar_user():
         users_cadastrados = []
@@ -78,7 +86,12 @@ def main(page: Page):
             dlg = AlertDialog(title=Text("email ja cadastrado no sistema"),on_dismiss=lambda e: print("Dialog dismissed!"))
             page.dialog = dlg
             dlg.open = True
-            page.update()                    
+            page.update()
+        elif validar_email(email.value) == "Invalid Email":
+            dlg = AlertDialog(title=Text("email invalido"),on_dismiss=lambda e: print("Dialog dismissed!"))
+            page.dialog = dlg
+            dlg.open = True
+            page.update()                           
         else:
             conexao = sqlite3.connect('usuarios.db')
             c = conexao.cursor()
