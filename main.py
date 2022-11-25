@@ -145,7 +145,12 @@ def main(page: Page):
 
     # Recuperar Senha
     def recuperar_senha(e):    
-        if email_cadastrado.value in verificar_email():
+        if email_cadastrado.value == '':
+            dlg = AlertDialog(title=Text("nenhum campo pode ficar em branco"),on_dismiss=lambda e: print("Dialog dismissed!"))
+            page.dialog = dlg
+            dlg.open = True
+            page.update()
+        elif email_cadastrado.value in verificar_email():
                 dlg = AlertDialog(title=Text(f"Digite sua nova senha"),content = nova_senha,actions=[
                 FilledButton("Alterar senha",on_click=inserir_nova_senha)
             ],on_dismiss=lambda e: print("Dialog dismissed!"))
