@@ -59,7 +59,7 @@ def main(page: Page):
 
     #CADASTRAR USUÁRIO
     def cadastrar_usuario(e):
-        if username.value == '' and email.value == '' and nome.value == '' and senha.value == '' and sobrenome.value == '':
+        if username.value == '' or email.value == '' or nome.value == '' or senha.value == '' or sobrenome.value == '':
             dlg = AlertDialog(title=Text("Nenhum campo pode ficar em branco!"),on_dismiss=lambda e: print("Dialog dismissed!"))
             page.dialog = dlg
             dlg.open = True
@@ -111,7 +111,7 @@ def main(page: Page):
         }
         conexao = sqlite3.connect('usuarios.db')      
         c = conexao.cursor()
-        if l_username.value == '' and l_senha.value == '':
+        if l_username.value == '' or l_senha.value == '':
             dlg = AlertDialog(title=Text("nenhum campo pode ficar em branco"),on_dismiss=lambda e: print("Dialog dismissed!"))
             page.dialog = dlg
             dlg.open = True
