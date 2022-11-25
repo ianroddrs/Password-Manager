@@ -10,11 +10,11 @@ def create_DB():
     try:
         c.execute('''CREATE TABLE IF NOT EXISTS user_cadastro (
                 user_id integer primary key autoincrement,
-                username text,
-                email text,
-                senha text,
-                nome text,
-                sobrenome text
+                username text NOT NULL,
+                email text NOT NULL,
+                senha text NOT NULL,
+                nome text NOT NULL,
+                sobrenome text NOT NULL
                 )
             ''')
         c.execute
@@ -59,7 +59,12 @@ def main(page: Page):
 
     #CADASTRAR USUÁRIO
     def cadastrar_usuario(e):
-        if username.value in verificar_user() and email.value in verificar_email():
+        if username.value == '' and email.value == '' and nome.value == '' and senha.value == '' and sobrenome.value == '':
+            dlg = AlertDialog(title=Text("Nenhum campo pode ficar em branco!"),on_dismiss=lambda e: print("Dialog dismissed!"))
+            page.dialog = dlg
+            dlg.open = True
+            page.update()
+        elif username.value in verificar_user() and email.value in verificar_email():
             dlg = AlertDialog(title=Text("username e email ja cadastrado no sistema"),on_dismiss=lambda e: print("Dialog dismissed!"))
             page.dialog = dlg
             dlg.open = True
@@ -106,31 +111,37 @@ def main(page: Page):
         }
         conexao = sqlite3.connect('usuarios.db')      
         c = conexao.cursor()
-        try:
-            c.execute("SELECT senha FROM user_cadastro WHERE username = '{}'".format(login['username']))
-            senha_bd = c.fetchall()
-            conexao.close()
-            l_username.value = ""
-            l_senha.value = ""
-            page.update
-        
-            if login['senha'] == senha_bd[0][0]:
-                global logado; logado = True
-                dlg = AlertDialog(title=Text(f"Hello {login['username']}!"),on_dismiss=lambda e: print("Dialog dismissed!"))
-                page.dialog = dlg
-                dlg.open = True
-                page.go("/Perfil")
-                page.update()
-            else:
-                dlg = AlertDialog(title=Text("Senha Incorreta!"), on_dismiss=lambda e: print("Dialog dismissed!"))
-                page.dialog = dlg
-                dlg.open = True
-                page.update()
-        except:
-            dlg = AlertDialog(title=Text("Usuario não cadastrado"), on_dismiss=lambda e: print("Dialog dismissed!"))
+        if l_username.value == '' and l_senha.value == '':
+            dlg = AlertDialog(title=Text("nenhum campo pode ficar em branco"),on_dismiss=lambda e: print("Dialog dismissed!"))
             page.dialog = dlg
             dlg.open = True
             page.update()
+        else:
+            try:
+                c.execute("SELECT senha FROM user_cadastro WHERE username = '{}'".format(login['username']))
+                senha_bd = c.fetchall()
+                conexao.close()
+                l_username.value = ""
+                l_senha.value = ""
+                page.update
+            
+                if login['senha'] == senha_bd[0][0]:
+                    global logado; logado = True
+                    dlg = AlertDialog(title=Text(f"Hello {login['username']}!"),on_dismiss=lambda e: print("Dialog dismissed!"))
+                    page.dialog = dlg
+                    dlg.open = True
+                    page.go("/Perfil")
+                    page.update()
+                else:
+                    dlg = AlertDialog(title=Text("Senha Incorreta!"), on_dismiss=lambda e: print("Dialog dismissed!"))
+                    page.dialog = dlg
+                    dlg.open = True
+                    page.update()
+            except:
+                dlg = AlertDialog(title=Text("Usuario não cadastrado"), on_dismiss=lambda e: print("Dialog dismissed!"))
+                page.dialog = dlg
+                dlg.open = True
+                page.update()
 
     # Recuperar Senha
     def recuperar_senha(e):    
