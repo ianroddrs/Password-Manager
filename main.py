@@ -1,7 +1,7 @@
 from time import sleep
 import sqlite3
 import flet
-from flet import AppBar, Page, Text, View ,ElevatedButton, colors,Container, PopupMenuButton,PopupMenuItem,Row, Icon,icons, NavigationRail,NavigationRailDestination,IconButton,FloatingActionButton,VerticalDivider,Column, ButtonStyle,TextField,FilledButton,margin, TextButton, alignment, AlertDialog
+from flet import AppBar, Page, Text, View ,ElevatedButton,SnackBar,Stack,ListTile, colors,Divider,Container, PopupMenuButton,PopupMenuItem,Row, Icon,icons, NavigationRail,NavigationRailDestination,IconButton,FloatingActionButton,VerticalDivider,Column, ButtonStyle,TextField,FilledButton,margin, TextButton, alignment, AlertDialog
 from flet.buttons import RoundedRectangleBorder
 def create_DB():
     conexao = sqlite3.connect('usuarios.db')
@@ -29,6 +29,7 @@ def main(page: Page):
     page.theme_mode = "light"
     page.window_min_width = 550
     page.window_min_height = 600
+    page.horizontal_alignment = "center"
 
     #VERIFICAÇÃO DE EMAIL
     def verificar_email():
@@ -68,29 +69,24 @@ def main(page: Page):
     #CADASTRAR USUÁRIO
     def cadastrar_usuario(e):
         if username.value == '' or email.value == '' or nome.value == '' or senha.value == '' or sobrenome.value == '':
-            dlg = AlertDialog(title=Text("Nenhum campo pode ficar em branco!"),on_dismiss=lambda e: print("Dialog dismissed!"))
-            page.dialog = dlg
-            dlg.open = True
+            page.snack_bar = SnackBar(Text("Nenhum campo pode estar em branco!",size=20),bgcolor=colors.RED,open=True)
+            
             page.update()
         elif username.value in verificar_user() and email.value in verificar_email():
-            dlg = AlertDialog(title=Text("username e email ja cadastrado no sistema"),on_dismiss=lambda e: print("Dialog dismissed!"))
-            page.dialog = dlg
-            dlg.open = True
+            page.snack_bar = SnackBar(Text("Username e E-mail já cadastrados no sistema!",size=20),bgcolor=colors.RED,open=True)
+            
             page.update()
         elif username.value in verificar_user():
-            dlg = AlertDialog(title=Text("username ja cadastrado no sistema"),on_dismiss=lambda e: print("Dialog dismissed!"))
-            page.dialog = dlg
-            dlg.open = True
+            page.snack_bar = SnackBar(Text("Username já cadastrado no sistema!",size=20),bgcolor=colors.RED,open=True)
+            
             page.update()
         elif email.value in verificar_email():
-            dlg = AlertDialog(title=Text("email ja cadastrado no sistema"),on_dismiss=lambda e: print("Dialog dismissed!"))
-            page.dialog = dlg
-            dlg.open = True
+            page.snack_bar = SnackBar(Text("E-mail já cadastrado no sistema!",size=20),bgcolor=colors.RED,open=True)
+            
             page.update()
         elif validar_email(email.value) == "Invalid Email":
-            dlg = AlertDialog(title=Text("email invalido"),on_dismiss=lambda e: print("Dialog dismissed!"))
-            page.dialog = dlg
-            dlg.open = True
+            page.snack_bar = SnackBar(Text("E-mail em formato inválido!",size=20),bgcolor=colors.RED,open=True)
+            
             page.update()                           
         else:
             conexao = sqlite3.connect('usuarios.db')
@@ -107,9 +103,8 @@ def main(page: Page):
             nome.value = ""
             sobrenome.value = ""
 
-            dlg = AlertDialog(title=Text(f"Cadastro realizado com sucesso!"),on_dismiss=lambda e: print("Dialog dismissed!"))
-            page.dialog = dlg
-            dlg.open = True
+            page.snack_bar = SnackBar(Text("Cadastro realizado com sucesso!",size=20),bgcolor=colors.GREEN,open=True)
+            
 
             page.update()
 
@@ -125,69 +120,71 @@ def main(page: Page):
         conexao = sqlite3.connect('usuarios.db')      
         c = conexao.cursor()
         if l_username.value == '' or l_senha.value == '':
-            dlg = AlertDialog(title=Text("nenhum campo pode ficar em branco"),on_dismiss=lambda e: print("Dialog dismissed!"))
-            page.dialog = dlg
-            dlg.open = True
+            page.snack_bar = SnackBar(Text("Nenhum campo pode estar em branco!",size=20),bgcolor=colors.RED,open=True)
+            
             page.update()
         else:
             try:
                 c.execute("SELECT senha FROM user_cadastro WHERE username = '{}'".format(login['username']))
                 senha_bd = c.fetchall()
                 conexao.close()
-                l_username.value = ""
-                l_senha.value = ""
-                page.update
             
                 if login['senha'] == senha_bd[0][0]:
                     global logado; logado = True
-                    dlg = AlertDialog(title=Text(f"Hello {login['username']}!"),on_dismiss=lambda e: print("Dialog dismissed!"))
+                    dlg = AlertDialog(title=Text(f"Seja bem-vindo, {login['username']}!"),on_dismiss=lambda e: print("Dialog dismissed!"))
                     page.dialog = dlg
                     dlg.open = True
+                    l_username.value = ""
+                    l_senha.value = ""
+                    page.update
                     page.go("/Perfil")
                     page.update()
                 else:
-                    dlg = AlertDialog(title=Text("Senha Incorreta!"), on_dismiss=lambda e: print("Dialog dismissed!"))
-                    page.dialog = dlg
-                    dlg.open = True
+                    page.snack_bar = SnackBar(Text("Senha incorreta!",size=20),bgcolor=colors.RED,open=True)
+                    
                     page.update()
             except:
-                dlg = AlertDialog(title=Text("Usuario não cadastrado"), on_dismiss=lambda e: print("Dialog dismissed!"))
-                page.dialog = dlg
-                dlg.open = True
+                page.snack_bar = SnackBar(Text("Usuário não cadastrado!",size=20),bgcolor=colors.RED,open=True)
+                
                 page.update()
 
-    # Recuperar Senha
-    def recuperar_senha(e):    
+    # redefinir Senha
+    def redefinir_senha(e):    
         if email_cadastrado.value == '':
-            dlg = AlertDialog(title=Text("nenhum campo pode ficar em branco"),on_dismiss=lambda e: print("Dialog dismissed!"))
-            page.dialog = dlg
-            dlg.open = True
+            page.snack_bar = SnackBar(Text("Nenhum campo pode estar em branco!",size=20),bgcolor=colors.RED,open=True)
+            
             page.update()
         elif email_cadastrado.value in verificar_email():
-                dlg = AlertDialog(title=Text(f"Digite sua nova senha"),content = nova_senha,actions=[
-                FilledButton("Alterar senha",on_click=inserir_nova_senha)
-            ],on_dismiss=lambda e: print("Dialog dismissed!"))
-                page.dialog = dlg
-                dlg.open = True
-                page.update()
+            page.snack_bar = SnackBar(Text("E-mail Encontrado!",size=20),bgcolor=colors.GREEN,open=True)
+            
+            email_cadastrado.visible = False
+            botao_verificar_email.visible = False
+            nova_senha.visible = True
+            botao_alterar_senha.visible = True
+            page.update()
         else:
-            dlg = AlertDialog(title=Text("Esse E-mail não pertence a nenhuma conta!"), on_dismiss=lambda e: print("Dialog dismissed!"))
-            page.dialog = dlg
-            dlg.open = True
+            page.snack_bar = SnackBar(Text("E-mail não pertence a nenhuma conta cadastrada!",size=20),bgcolor=colors.RED,open=True)
+            
             page.update()
     
     # Inserir nova senha no banco de dados
     def inserir_nova_senha(e):
         conexao = sqlite3.connect('usuarios.db')  
         c = conexao.cursor()
-        dlg = AlertDialog(title=Text(f"Senha alterada!"),on_dismiss=lambda e: print("Dialog dismissed!"))
+        page.snack_bar = SnackBar(Text("Senha redefinida com sucesso!",size=20),bgcolor=colors.GREEN,open=True)
+        
         senha_update = """Update user_cadastro set senha = ? where email = ?"""
         valores = (nova_senha.value,email_cadastrado.value)
         c.execute(senha_update,valores)
         conexao.commit()
         conexao.close()
-        page.dialog = dlg
-        dlg.open = True
+        email_cadastrado.visible = True
+        botao_verificar_email.visible = True
+        nova_senha.visible = False
+        botao_alterar_senha.visible = False
+        nova_senha.value = ""
+        email_cadastrado.value = ""
+        page.go("/")
         page.update()
 
     #ABRIR/FECHAR RAIL
@@ -215,13 +212,32 @@ def main(page: Page):
         select_page()
         page.update()
 
+    #MENU PARA GERAR SENHAS
+    def menu_add_senhas(e):
+        page.dialog = dlg_gerar_senha
+        page.update()
+
+    def add_senhas(e):
+        item_senha = ListTile(
+                            leading=Icon(icons.KEY),
+                            title=Text(nome_sistema.value),
+                            subtitle=Text(descricao_sistema.value),)
+        lista_senhas.controls.append(item_senha)
+        nome_sistema.value = ""
+        descricao_sistema.value= ""
+        page.update()
+
+    def close_dlg(e):
+        dlg_gerar_senha.open = False
+        page.update()
+
     #MENUS
 
     #MENU LOGIN USUÁRIO
     titulo_login = Text(value='Entre',weight='bold',size=30)
     l_username = TextField(label='Username',autofocus=True,expand=False,prefix_icon=icons.ACCOUNT_CIRCLE,width=500)
     l_senha = TextField(label='Senha',border_color=colors.BLACK,password=True,can_reveal_password=True,prefix_icon=icons.PASSWORD,width=500)
-    esqueceu_senha = TextButton(text="Redefinir senha",on_click= lambda _: page.go("/recuperar"), style=ButtonStyle(color={"hovered": colors.BLUE_900,},bgcolor={"hovered": colors.TRANSPARENT, "": colors.TRANSPARENT},))
+    esqueceu_senha = TextButton(text="Redefinir senha",on_click= lambda _: page.go("/redefinir"), style=ButtonStyle(color={"hovered": colors.BLUE_900,},bgcolor={"hovered": colors.TRANSPARENT, "": colors.TRANSPARENT},))
     botao_login = FilledButton(text='Entrar',on_click=login_sistema,width=500,style=ButtonStyle(shape={"hovered": RoundedRectangleBorder(radius=20),"": RoundedRectangleBorder(radius=5)},))
     botao_pagina_cadastrar = TextButton(text="CADASTRAR",on_click= lambda _: page.go("/cadastro"), style=ButtonStyle(color={"hovered": colors.BLUE_900,},))
     global logado; logado = False
@@ -241,28 +257,59 @@ def main(page: Page):
     theme_icon_button = IconButton(icons.DARK_MODE, selected_icon=icons.LIGHT_MODE, icon_color=colors.BLACK,icon_size=25, tooltip="change theme", on_click=change_theme,style=ButtonStyle(color={"": colors.BLACK, "selected": colors.WHITE}, ), )
     textAppBar = ""; AppBarMenu =AppBar(leading_width=110,title=Text(textAppBar), bgcolor=colors.SURFACE_VARIANT,actions=[theme_icon_button,PopupMenuButton(items=[PopupMenuItem()])])
 
-    #MENU RECUPERAR SENHA
-    titulo_recuperar_senha = Text(value='Recupere sua Senha',weight='bold',size=30)
-    email_cadastrado= TextField(label='E-mail Cadastrado', border_color=colors.BLACK,prefix_icon=icons.EMAIL,width=500)
-    botao_verificar_email  = FilledButton(text='VERIFICAR',on_click=recuperar_senha,width=500,style=ButtonStyle(shape={"hovered": RoundedRectangleBorder(radius=20),"": RoundedRectangleBorder(radius=5)},))
-    nova_senha = TextField(label='Nova Senha',border_color=colors.BLACK,password=True,can_reveal_password=True,prefix_icon=icons.PASSWORD,width=500)
-    
+    #MENU redefinir SENHA
+    titulo_redefinir_senha = Text(value='Redefina sua Senha',weight='bold',size=30)
+    email_cadastrado= TextField(label='E-mail Cadastrado', border_color=colors.BLACK,prefix_icon=icons.EMAIL,width=500,scale=0.9)
+    botao_verificar_email = IconButton(icon=icons.SEARCH,bgcolor=colors.BLUE_800,icon_color=colors.WHITE,scale=1.5,on_click=redefinir_senha,style=ButtonStyle(bgcolor={"hovered":colors.BLUE_900},shape={"hovered": RoundedRectangleBorder(radius=13)}))
+    nova_senha = TextField(label='Nova Senha',helper_text="Digite sua nova senha",border_color=colors.BLACK,password=True,can_reveal_password=True,prefix_icon=icons.PASSWORD,width=500,visible=False)
+    botao_alterar_senha = FilledButton(text='Alterar Senha',width=500,on_click=inserir_nova_senha,style=ButtonStyle(shape={"hovered": RoundedRectangleBorder(radius=20),"": RoundedRectangleBorder(radius=5)},),visible=False)
+
     #RAIL NAVIGATION
     #BOTÕES GERAR E SAIR
     btn_logout = Container(content=ElevatedButton(color=colors.WHITE,bgcolor=colors.RED,icon=icons.ARROW_LEFT,text='SAIR',width=100,height=50,on_click=logout,style=ButtonStyle(shape={"hovered": RoundedRectangleBorder(radius=20),"": RoundedRectangleBorder(radius=5)})),margin=margin.only(top=50))
-    btn_gerar = Container(content=FloatingActionButton(icon=icons.ADD,width=100, text="GERAR",on_click=fab_click),margin=margin.only(bottom=15))
+    btn_gerar = Container(content=FloatingActionButton(icon=icons.ADD,width=100, text="GERAR",on_click=menu_add_senhas),margin=margin.only(bottom=15))
+
+    #MENU GERAR SENHA
+    nome_sistema = TextField(label="Nome do sistema",prefix_icon=icons.INFO)
+    descricao_sistema= TextField(label="Descrição",prefix_icon=icons.INFO)
+    botao_gerar_senha= FilledButton(text='Gerar Senha',width=500,on_click=add_senhas,style=ButtonStyle(shape={"hovered": RoundedRectangleBorder(radius=20),"": RoundedRectangleBorder(radius=5)},))
+    dlg_gerar_senha = AlertDialog(title=Text("Cadastre uma nova senha"), on_dismiss=lambda e: print("Dialog dismissed!"),open = True,content=Row([nome_sistema,descricao_sistema,botao_gerar_senha],wrap=True),modal=True,actions=[
+            TextButton("Fechar", on_click=close_dlg),
+        ],
+        actions_alignment="center",)
+
+    
+    lista_senhas = Column([
+        
+    ],scroll="hidden",width=1200,expand=True)
+
+    
     
     #PAGINAS
     pages = [
         Text("PERFIL", visible=False),
-        Container(expand=True,bgcolor=colors.AMBER,
-            content=Row(
-                [
-                    Container(scale=0.5,expand=True,bgcolor=colors.BLUE),
-                    Container(expand=True,bgcolor=colors.RED,),
-                ]
-            )
-        ),
+        Container(content=Row(
+                        [
+                            Column(controls=[
+                                    Row([Text(value="SENHAS",size=50)], alignment="center"),
+                                    Row(
+                                        [
+                                            TextField(hint_text="Pesquisar senha",expand=True),
+                                            FloatingActionButton(icon=icons.SEARCH)
+                                        ],width=1200
+                                    ),
+                                    Divider(),
+                                    Column(
+                                        spacing=25,
+                                        expand=True,
+                                        controls=[
+                                            lista_senhas,
+                                        ],
+                                    ),
+                                        ],expand=True,alignment="center",horizontal_alignment="center"
+                                    )
+                        ],expand=True,
+                    ),expand=True),
         Text("SETTINGS", visible=False),
     ]
 
@@ -356,19 +403,19 @@ def main(page: Page):
                     ],
                 )
             )
-        elif page.route == "/recuperar":
-            AppBarMenu.title = Text("Recuperação de Senha")
+        elif page.route == "/redefinir":
+            AppBarMenu.title = Text("Redefinição de Senha")
             AppBarMenu.leading = None
             page.views.append(
                 View(
-                    "/recuperar",
+                    "/redefinir",
                     [
                         AppBarMenu,
                         Container(content=Row(
                             [
                                 Column(controls=[
-                                        Container(content=titulo_recuperar_senha,width=500,alignment=alignment.center_left,margin=margin.only(bottom=15)),
-                                        Row([email_cadastrado],alignment="center"),botao_verificar_email
+                                        Container(content=titulo_redefinir_senha,width=500,alignment=alignment.center_left,margin=margin.only(bottom=15)),
+                                        Row([email_cadastrado,botao_verificar_email],alignment="center"),nova_senha,botao_alterar_senha
                                     ],expand=True,alignment="center",horizontal_alignment="center"
                                 )
                             ],expand=True,
@@ -386,8 +433,7 @@ def main(page: Page):
                         "/Perfil",
                         [
                             AppBarMenu,
-                            Row([rail,VerticalDivider(width=1),Column(pages,expand=True)],expand=True)
-                        
+                            Row([rail,VerticalDivider(width=1),Column(pages,expand=True)],expand=True),
                         ],
                     )
                 )
