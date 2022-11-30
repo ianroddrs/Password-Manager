@@ -215,6 +215,7 @@ def main(page: Page):
     #MENU PARA GERAR SENHAS
     def menu_add_senhas(e):
         page.dialog = dlg_gerar_senha
+        dlg_gerar_senha.open = True
         page.update()
 
     def add_senhas(e):
@@ -225,6 +226,7 @@ def main(page: Page):
         lista_senhas.controls.append(item_senha)
         nome_sistema.value = ""
         descricao_sistema.value= ""
+        dlg_gerar_senha.open = False
         page.update()
 
     def close_dlg(e):
