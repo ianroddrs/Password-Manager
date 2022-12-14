@@ -3,6 +3,11 @@ import sqlite3
 import flet
 from flet import AppBar, Page, Text, View ,ElevatedButton,SnackBar,Stack,ListTile, colors,Divider,Container, PopupMenuButton,PopupMenuItem,Row, Icon,icons, NavigationRail,NavigationRailDestination,IconButton,FloatingActionButton,VerticalDivider,Column, ButtonStyle,TextField,FilledButton,margin, TextButton, alignment, AlertDialog
 from flet.buttons import RoundedRectangleBorder
+from Crypto.Cipher import AES
+from base64 import b64encode
+from secrets import token_bytes
+import pyperclip as pc 
+
 def create_DB():
     conexao = sqlite3.connect('usuarios.db')
     c = conexao.cursor()
@@ -27,9 +32,10 @@ create_DB()
 def main(page: Page):
     page.title = "Password Manager"
     page.theme_mode = "light"
-    page.window_min_width = 550
+    page.window_min_width = 600
     page.window_min_height = 600
     page.horizontal_alignment = "center"
+    page.window_always_on_top = True
 
     #VERIFICAÇÃO DE EMAIL
     def verificar_email():
@@ -127,6 +133,19 @@ def main(page: Page):
             try:
                 c.execute("SELECT senha FROM user_cadastro WHERE username = '{}'".format(login['username']))
                 senha_bd = c.fetchall()
+                c.execute("SELECT user_id FROM user_cadastro WHERE username = '{}'".format(login['username']))
+                global user_logado
+                user_logado = c.fetchall()[0][0]
+
+                c.execute(f'''CREATE TABLE IF NOT EXISTS user_senhas{user_logado} (
+                    senha_id integer primary key autoincrement,
+                    nome text NOT NULL,
+                    desc text NOT NULL,
+                    senha text NOT NULL
+                    )
+                ''')
+                c.execute
+
                 conexao.close()
             
                 if login['senha'] == senha_bd[0][0]:
@@ -138,6 +157,7 @@ def main(page: Page):
                     l_senha.value = ""
                     page.update
                     page.go("/Perfil")
+                    atualizar_lista_senhas()
                     page.update()
                 else:
                     page.snack_bar = SnackBar(Text("Senha incorreta!",size=20),bgcolor=colors.RED,open=True)
@@ -219,11 +239,15 @@ def main(page: Page):
         page.update()
 
     def add_senhas(e):
-        item_senha = ListTile(
-                            leading=Icon(icons.KEY),
-                            title=Text(nome_sistema.value),
-                            subtitle=Text(descricao_sistema.value),)
-        lista_senhas.controls.append(item_senha)
+        senha_encript = encrypt(nome_sistema.value+descricao_sistema.value+str(user_logado))
+        conexao = sqlite3.connect('usuarios.db')      
+        c = conexao.cursor()
+        query = f"""INSERT INTO user_senhas{user_logado}(nome, desc, senha) VALUES (?, ?, ?)"""
+        valores = (nome_sistema.value,descricao_sistema.value,senha_encript)
+        c.execute(query,valores)
+        conexao.commit()
+        conexao.close()
+        atualizar_lista_senhas()
         nome_sistema.value = ""
         descricao_sistema.value= ""
         dlg_gerar_senha.open = False
@@ -232,6 +256,63 @@ def main(page: Page):
     def close_dlg(e):
         dlg_gerar_senha.open = False
         page.update()
+
+    def encrypt(mensagem, key = token_bytes(16)):
+        cipher = AES.new(key, AES.MODE_EAX)
+        ciphertext = cipher.encrypt(mensagem.encode())
+        ciphertext = b64encode(ciphertext).decode()
+        return ciphertext
+    
+
+    #VERIFICAÇÃO DADOS GERADOS PELO USUÁRIO
+    def verificar_dados_user():
+        dados_cadastrados = []
+        conexao = sqlite3.connect('usuarios.db')
+        c = conexao.cursor()
+        c.execute(f"""SELECT nome from user_senhas{user_logado}""")
+        nomes_geradas = c.fetchall()
+        c.execute(f"""SELECT desc from user_senhas{user_logado}""")
+        desc_gerados = c.fetchall()
+        c.execute(f"""SELECT senha from user_senhas{user_logado}""")
+        senhas_geradas = c.fetchall()
+        for i in zip(nomes_geradas,desc_gerados,senhas_geradas):
+            dados_cadastrados.append(i)
+        conexao.commit()
+        conexao.close()
+        return dados_cadastrados
+
+    
+
+    def atualizar_lista_senhas():
+        dados = verificar_dados_user()
+        lista_senhas.controls.clear()
+        for i in range(len(dados)):
+            senha =dados[i][2][0]
+            item_senha = ListTile(
+                                leading=Icon(icons.KEY),
+                                title=Text(dados[i][0][0],width=100),
+                                subtitle=Text(dados[i][1][0],width=100),
+                                trailing=Row([Stack([
+                                        Text(senha[:9]+"...",left=0,width=200),
+                                        IconButton(icon=icons.COPY,left=120,on_click=copiar),
+                                        IconButton(icon=icons.EDIT,right=50),
+                                        IconButton(icon=icons.DELETE,right=0)
+                                    ],width=400)
+                                    
+                                ],width=500,alignment="center")
+            )
+            
+            lista_senhas.controls.append(item_senha)
+
+        page.update()
+
+    def copiar(e):
+        pc.copy()
+        page.snack_bar = SnackBar(Text("Copiado para área de transferência!"))
+        page.snack_bar.open = True
+        page.update()
+
+    
 
     #MENUS
 
@@ -285,20 +366,52 @@ def main(page: Page):
         
     ],scroll="hidden",width=1200,expand=True)
 
+    #EDIÇÃO DE USUÁRIO
+    edit_nome = TextField(label='Nome',autofocus=True,prefix_icon=icons.PERSON,width=245)
+    edit_sobrenome = TextField(label='Sobrenome',prefix_icon=icons.PERSON,width=245)
+    edit_username = TextField(label='Username',prefix_icon=icons.ACCOUNT_CIRCLE,width=500)
+    edit_email = TextField(label='E-mail', border_color=colors.BLACK,prefix_icon=icons.EMAIL,width=500)
+    user_Edit= [
+        Column(controls=[
+                Row([edit_nome,edit_sobrenome,],alignment="center"),edit_username,edit_email,botao_cadastrar,
+                Container(width=500, bgcolor=colors.BLACK45,height=1,margin=20),
+            ],scroll="hidden",expand=True,alignment="center",horizontal_alignment="center"
+        )
+    ]
+
     
     
     #PAGINAS
     pages = [
-        Text("PERFIL", visible=False),
+        Container(content=Row(
+                        [
+                            Column(controls=[
+                                    Row([Text(value="EDIÇÃO DE DADOS",size=50)], alignment="center"),
+                                    Divider(),
+                                    Column(
+                                        spacing=25,
+                                        expand=True,
+                                        controls=[
+                                            Container(content=Row(
+                            
+                                user_Edit
+                            ,expand=True,
+                        ),expand=True),
+                                            
+                                        ],
+                                    ),
+                                        ],expand=True,alignment="center",horizontal_alignment="center"
+                                    )
+                        ],expand=True,
+                    ),expand=True,visible=False),
         Container(content=Row(
                         [
                             Column(controls=[
                                     Row([Text(value="SENHAS",size=50)], alignment="center"),
                                     Row(
                                         [
-                                            TextField(hint_text="Pesquisar senha",expand=True),
-                                            FloatingActionButton(icon=icons.SEARCH)
-                                        ],width=1200
+                                            ElevatedButton(color=colors.WHITE,bgcolor=colors.GREEN_400,width=600,icon=icons.ADD,text='GERAR NOVA SENHA',on_click=menu_add_senhas,style=ButtonStyle(shape={"hovered": RoundedRectangleBorder(radius=20),"": RoundedRectangleBorder(radius=5)}))
+                                        ],width=1200,alignment="center"
                                     ),
                                     Divider(),
                                     Column(
@@ -312,7 +425,6 @@ def main(page: Page):
                                     )
                         ],expand=True,
                     ),expand=True),
-        Text("SETTINGS", visible=False),
     ]
 
     def select_page():
@@ -347,9 +459,6 @@ def main(page: Page):
             ),
             NavigationRailDestination(
                 icon_content=Icon(icons.KEY),label="SENHAS",
-            ),
-            NavigationRailDestination(
-                icon=icons.SETTINGS_OUTLINED, label_content=Text("SETTINGS"),
             ),
         ],
         on_change=dest_change,
