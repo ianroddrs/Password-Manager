@@ -168,6 +168,15 @@ def main(page: Page):
                 
                 page.update()
 
+    # editar dados
+    def editar_dados(e):
+        conexao = sqlite3.connect('usuarios.db')  
+        c = conexao.cursor()
+        # dados_update = """Update user_cadastro set nome = ?, sobrenome = ?, senha = ?, email = ? where = ? """
+        # queryup = (edit_nome.value,edit_sobrenome.value,edit_senha.value,l_username.value)
+        c.execute("UPDATE user_cadastro SET nome=?, sobrenome=?, senha =?, email=? WHERE username = ? ", (edit_nome.value,edit_sobrenome.value,edit_senha.value,edit_email.value,confirmar_username.value))
+        conexao.commit()
+        conexao.close()
     # redefinir Senha
     def redefinir_senha(e):    
         if email_cadastrado.value == '':
@@ -369,16 +378,17 @@ def main(page: Page):
     #EDIÇÃO DE USUÁRIO
     edit_nome = TextField(label='Nome',autofocus=True,prefix_icon=icons.PERSON,width=245)
     edit_sobrenome = TextField(label='Sobrenome',prefix_icon=icons.PERSON,width=245)
-    edit_username = TextField(label='Username',prefix_icon=icons.ACCOUNT_CIRCLE,width=500)
+    edit_senha = TextField(label='senha',prefix_icon=icons.PASSWORD,width=500)
     edit_email = TextField(label='E-mail', border_color=colors.BLACK,prefix_icon=icons.EMAIL,width=500)
+    confirmar_username = TextField(label='Confirme seu Username',prefix_icon=icons.PERSON,width=245)
+    botao_editar = FilledButton(text='Editar Dados',width=500,on_click=editar_dados,style=ButtonStyle(shape={"hovered": RoundedRectangleBorder(radius=20),"": RoundedRectangleBorder(radius=5)},))
     user_Edit= [
         Column(controls=[
-                Row([edit_nome,edit_sobrenome,],alignment="center"),edit_username,edit_email,botao_cadastrar,
+                Row([edit_nome,edit_sobrenome,],alignment="center"),edit_senha,edit_email,confirmar_username,botao_editar,
                 Container(width=500, bgcolor=colors.BLACK45,height=1,margin=20),
             ],scroll="hidden",expand=True,alignment="center",horizontal_alignment="center"
         )
     ]
-
     
     
     #PAGINAS
